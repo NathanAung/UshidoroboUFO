@@ -6,6 +6,8 @@
 #include <OgreInput.h>
 #include <OgreRTShaderSystem.h>
 
+#include "UFOController.h"
+
 class CoreApp 
     : public OgreBites::ApplicationContext
     , public OgreBites::InputListener
@@ -27,8 +29,9 @@ public:
 
 
 private:
-    Ogre::SceneNode* headNode;
     Ogre::SceneNode* mainCamera;
+
+    UFOController* ufoController;
 };
 
 #endif
