@@ -39,6 +39,8 @@ void CoreApp::setup()
 
     // Entity creation
     Ogre::Entity *ufoEntity = scnMgr->createEntity("UFO", "ufo.mesh");
+
+    ufoEntity->setQueryFlags(PLAYER_MASK);
     
     // 1. Create the base translation node (Root)
     Ogre::SceneNode* playerRoot = scnMgr->getRootSceneNode()->createChildSceneNode("PlayerRoot");
@@ -49,6 +51,23 @@ void CoreApp::setup()
     
     // Apply scaling to the visual node
     visualNode->setScale(10.0f, 10.0f, 10.0f); 
+
+
+    // --- TEMPORARY TEST COW ---
+    // Using the ogrehead as a placeholder for the cow 
+    Ogre::Entity* testCow = scnMgr->createEntity("TestCow", "ogrehead.mesh");
+    
+    // Apply the cow mask so the tractor beam raycast can detect it
+    testCow->setQueryFlags(COW_MASK); 
+    
+    Ogre::SceneNode* testCowNode = scnMgr->getRootSceneNode()->createChildSceneNode("TestCowNode");
+    testCowNode->attachObject(testCow);
+    
+    // Position it slightly in front of and below the UFO starting position
+    testCowNode->setPosition(0, -50, -50); 
+    testCowNode->setScale(0.5f, 0.5f, 0.5f);
+    // --------------------------
+
 
     // Initialize the controller with the split nodes and the camera
     ufoController = new UFOController(scnMgr, playerRoot, visualNode, cam);
