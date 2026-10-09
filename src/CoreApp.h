@@ -29,8 +29,6 @@ public:
 
 
 private:
-    Ogre::SceneNode* mainCamera;
-
     UFOController* ufoController;
 };
 

@@ -3,10 +3,11 @@
 
 #include <Ogre.h>
 #include <OgreInput.h>
+#include <random>
 
 class UFOController {
 public:
-    UFOController(Ogre::SceneManager* scnMgr, Ogre::SceneNode* ufoNode);
+    UFOController(Ogre::SceneManager* scnMgr, Ogre::SceneNode* playerRoot, Ogre::SceneNode* visualNode, Ogre::Camera* camera);
     ~UFOController();
 
     // Core update loop for continuous actions
@@ -18,7 +19,11 @@ public:
 
 private:
     Ogre::SceneManager* mScnMgr;
-    Ogre::SceneNode* mUFONode;
+    
+    // Split node architecture
+    Ogre::SceneNode* mPlayerRoot; // Translates the player and camera
+    Ogre::SceneNode* mVisualNode; // Spins the 3D model
+    Ogre::SceneNode* mCameraBoom; // Holds the camera offset
 
     // Movement state flags
     bool mGoingForward;
@@ -28,6 +33,11 @@ private:
 
     // Base movement speed (units per second)
     float mBaseSpeed;
+    float mCurrentSpeed; // Tracks the active speed multiplier
+
+    // C++11 Random Number Generation
+    std::mt19937 mRng;
+    std::uniform_real_distribution<float> mSpeedDistribution;
 };
 
 #endif

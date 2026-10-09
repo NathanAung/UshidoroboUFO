@@ -1,6 +1,6 @@
 #include "CoreApp.h"
 
-CoreApp::CoreApp() : OgreBites::ApplicationContext("OgreTestApp"), mainCamera(nullptr), ufoController(nullptr)
+CoreApp::CoreApp() : OgreBites::ApplicationContext("OgreTestApp"), ufoController(nullptr)
 {
 }
 
@@ -24,13 +24,10 @@ void CoreApp::setup()
     Ogre::RTShader::ShaderGenerator *shadergen = Ogre::RTShader::ShaderGenerator::getSingletonPtr();
     shadergen->addSceneManager(scnMgr);
 
-    // Camera
+    // Create the camera, but not attached to the root scene node here
     Ogre::Camera *cam = scnMgr->createCamera("MainCam");
     cam->setNearClipDistance(5);
     cam->setAutoAspectRatio(true);
-    mainCamera = scnMgr->getRootSceneNode()->createChildSceneNode();
-    mainCamera->attachObject(cam);
-    mainCamera->setPosition(0, 0, 200);
     getRenderWindow()->addViewport(cam);
 
     // Light
@@ -40,13 +37,21 @@ void CoreApp::setup()
     lightNode->attachObject(light);
     scnMgr->setSkyBox(true, "Examples/CloudyNoonSkyBox", 5000, true);
 
-    // Ogre automatically uses the Assimp codec when it detects the .obj extension
-    Ogre::Entity *ufoEntity = scnMgr->createEntity("UFO", "toyUFO.obj");
-    Ogre::SceneNode* ufoNode = scnMgr->getRootSceneNode()->createChildSceneNode();
-    ufoNode->attachObject(ufoEntity);
+    // Entity creation
+    Ogre::Entity *ufoEntity = scnMgr->createEntity("UFO", "ufo.mesh");
+    
+    // 1. Create the base translation node (Root)
+    Ogre::SceneNode* playerRoot = scnMgr->getRootSceneNode()->createChildSceneNode("PlayerRoot");
+    
+    // 2. Create the visual node for the spinning animation (Child of Root)
+    Ogre::SceneNode* visualNode = playerRoot->createChildSceneNode("UFOVisuals");
+    visualNode->attachObject(ufoEntity);
+    
+    // Apply scaling to the visual node
+    visualNode->setScale(10.0f, 10.0f, 10.0f); 
 
-    // Pass the node to the controller
-    ufoController = new UFOController(scnMgr, ufoNode);
+    // Initialize the controller with the split nodes and the camera
+    ufoController = new UFOController(scnMgr, playerRoot, visualNode, cam);
 }
 
 bool CoreApp::keyPressed(const OgreBites::KeyboardEvent &evt)
@@ -86,11 +91,6 @@ void CoreApp::frameRendered(const Ogre::FrameEvent &evt)
 
 bool CoreApp::mouseMoved(const OgreBites::MouseMotionEvent &evt)
 {
-    if (mainCamera)
-    {
-        mainCamera->yaw(Ogre::Degree(0.05f * evt.xrel));
-        mainCamera->pitch(Ogre::Degree(0.05f * evt.yrel));
-    }
     return true;
 }
 
