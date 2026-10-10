@@ -40,6 +40,14 @@ void CoreApp::setup()
     // Entity creation
     Ogre::Entity *ufoEntity = scnMgr->createEntity("UFO", "ufo.mesh");
 
+    // Generate Terrain Mesh
+    TerrainController terrainController;
+    Ogre::Entity *terrainEntity = terrainController.GenerateTerrainMesh(scnMgr, 1000, 1000, 1.0f);
+    
+    Ogre::SceneNode *terrainNode = scnMgr->getRootSceneNode()->createChildSceneNode("TerrainNode");
+    terrainNode->attachObject(terrainEntity);
+    terrainNode->setPosition(0, -50, 0); // Adjust the Y position to lower the terrain
+
     ufoEntity->setQueryFlags(PLAYER_MASK);
     
     // 1. Create the base translation node (Root)

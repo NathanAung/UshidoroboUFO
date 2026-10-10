@@ -7,6 +7,7 @@
 #include <OgreRTShaderSystem.h>
 
 #include "UFOController.h"
+#include "TerrainController.h"
 
 class CoreApp 
     : public OgreBites::ApplicationContext
