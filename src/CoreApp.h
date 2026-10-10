@@ -8,6 +8,7 @@
 
 #include "UFOController.h"
 #include "SpawnManager.h"
+#include "ParticleManager.h"
 
 class CoreApp 
     : public OgreBites::ApplicationContext
@@ -32,6 +33,7 @@ public:
 private:
     UFOController* ufoController;
     SpawnManager* spawnManager;
+    ParticleManager* mParticleManager;
 };
 
 #endif

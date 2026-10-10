@@ -1,8 +1,8 @@
 #include "UFOController.h"
 
 
-UFOController::UFOController(Ogre::SceneManager* scnMgr, Ogre::SceneNode* playerRoot, Ogre::SceneNode* visualNode, Ogre::Camera* camera)
-    : mScnMgr(scnMgr), mPlayerRoot(playerRoot), mVisualNode(visualNode),
+UFOController::UFOController(Ogre::SceneManager* scnMgr, Ogre::SceneNode* playerRoot, Ogre::SceneNode* visualNode, Ogre::Camera* camera, ParticleManager* particleMgr)
+    : mScnMgr(scnMgr), mPlayerRoot(playerRoot), mVisualNode(visualNode), mParticleManager(particleMgr),
       mCowsAbducted(0), mHealth(5), mInvulnerabilityTimer(0.0f), mHoverAltitude(30.0f),
       mGoingForward(false), mGoingBack(false), mGoingLeft(false), mGoingRight(false),
       mBaseSpeed(100.0f), mCurrentSpeed(100.0f) // Adjust this value to match the game's scale
@@ -55,6 +55,10 @@ void UFOController::takeDamage(int amount)
     if (mHealth <= 0 || mInvulnerabilityTimer > 0.0f) return;
 
     mHealth -= amount;
+
+    if (mParticleManager) {
+        mParticleManager->spawnExplosion(mPlayerRoot->getPosition());
+    }
     
     // Set 1.5 seconds of invulnerability (i-frames) to prevent instant death from overlapping hitboxes
     mInvulnerabilityTimer = 1.5f; 
