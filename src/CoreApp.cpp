@@ -10,6 +10,7 @@ CoreApp::~CoreApp()
     if (ufoController) {
         delete ufoController;
         ufoController = nullptr;
+        spawnManager = nullptr;
     }
 }
 
@@ -71,6 +72,12 @@ void CoreApp::setup()
 
     // Initialize the controller with the split nodes and the camera
     ufoController = new UFOController(scnMgr, playerRoot, visualNode, cam);
+
+    //Initialize the spawn manager
+    spawnManager = new SpawnManager(scnMgr);
+
+    //Spawn some test objects
+    spawnManager->spawnRandom(SpawnType::Cow, 50);
 }
 
 bool CoreApp::keyPressed(const OgreBites::KeyboardEvent &evt)

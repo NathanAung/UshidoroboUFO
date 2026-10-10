@@ -7,6 +7,7 @@
 #include <OgreRTShaderSystem.h>
 
 #include "UFOController.h"
+#include "SpawnManager.h"
 
 class CoreApp 
     : public OgreBites::ApplicationContext
@@ -30,6 +31,7 @@ public:
 
 private:
     UFOController* ufoController;
+    SpawnManager* spawnManager;
 };
 
 #endif
