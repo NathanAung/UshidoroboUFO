@@ -1,5 +1,7 @@
 #include "TerrainController.h"
 
+std::vector<std::vector<float>> TerrainController::heightMap;
+float TerrainController::terrainScale = 1.0f;
 
 Ogre::Entity* TerrainController::GenerateTerrainMesh(Ogre::SceneManager *sceneMgr, int width, int depth, float scale)
 {
@@ -23,6 +25,9 @@ Ogre::Entity* TerrainController::GenerateTerrainMesh(Ogre::SceneManager *sceneMg
     // 2. Generate noise map matching the width and depth
     auto noiseMap = TerrainController::generateNoiseMap(width, depth, noise, 125.0f, 4, 0.5f, 2.0f, 0.0f, 0.0f);
 
+    heightMap = noiseMap;
+    terrainScale = scale;
+   
     // 3. Create a custom material that tracks vertex colors
     std::string matName = "TerrainMaterial";
     Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().create(
@@ -186,3 +191,56 @@ std::array<int, 3> TerrainController::getTerrainColor(float noiseValue, const Te
     float t = Noise::clamp(normalized + terrain.lerpAdjustment, 0.0f, 1.0f);
     return lerpColor(terrain.minColor, terrain.maxColor, t);
 }   
+
+float TerrainController::getHeightAt(float x, float z)
+{
+    float gx = x / terrainScale;
+    float gz = z / terrainScale;
+
+    int ix = static_cast<int>(std::floor(gx));
+    int iz = static_cast<int>(std::floor(gz));
+
+    int width = static_cast<int>(heightMap.size());
+    int depth = static_cast<int>(heightMap[0].size());
+
+    if (ix < 0 || iz < 0 ||
+        ix >= width - 1 || iz >= depth - 1)
+        return 0.0f;
+
+    auto vertex = [](int vx, int vz) -> Ogre::Vector3
+    {
+        return Ogre::Vector3(
+            vx * terrainScale,
+            heightMap[vx][vz] * 50.0f,
+            vz * terrainScale
+        );
+    };
+
+    Ogre::Vector3 topLeft     = vertex(ix, iz);
+    Ogre::Vector3 topRight    = vertex(ix + 1, iz);
+    Ogre::Vector3 bottomLeft  = vertex(ix, iz + 1);
+    Ogre::Vector3 bottomRight = vertex(ix + 1, iz + 1);
+
+    Ogre::Ray ray(
+        Ogre::Vector3(x, 1000.0f, z),
+        Ogre::Vector3::NEGATIVE_UNIT_Y
+    );
+
+    auto hit1 = Ogre::Math::intersects(
+        ray, topLeft, bottomLeft, topRight,
+        true, true
+    );
+
+    if (hit1.first)
+        return ray.getPoint(hit1.second).y - 40.0f;
+
+    auto hit2 = Ogre::Math::intersects(
+        ray, topRight, bottomLeft, bottomRight,
+        true, true
+    );
+
+    if (hit2.first)
+        return ray.getPoint(hit2.second).y - 40.0f;
+
+    return 0.0f;
+}

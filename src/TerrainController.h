@@ -33,6 +33,8 @@ public:
 
     Ogre::Entity* GenerateTerrainMesh(Ogre::SceneManager *sceneMgr, int width, int depth, float scale);
 
+    static float getHeightAt(float x, float z);
+
 private:
     std::vector<std::vector<float>> generateNoiseMap(
         int mapWidth, int mapHeight,
@@ -44,6 +46,9 @@ private:
         const std::array<int, 3> &colorB,
         float t);
     std::array<int, 3> getTerrainColor(float noiseValue, const TerrainType &terrain);
+
+    static std::vector<std::vector<float>> heightMap;
+    static float terrainScale;
 };
 
 #endif // __TERRAIN_CONTROLLER_H__

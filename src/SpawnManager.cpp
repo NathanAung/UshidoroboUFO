@@ -1,12 +1,12 @@
 #include "SpawnManager.h"
 #include "UFOController.h" // For QueryFlags
-
+#include "TerrainController.h" // For getHeightAt
 #include <string>
 
 SpawnManager::SpawnManager(Ogre::SceneManager* scnMgr)
     : mScnMgr(scnMgr),
       mRng(std::random_device{}()),
-      mPositionDistribution(-500.0f, 500.0f)
+      mPositionDistribution(20.0f, 979.0f)
 {
 }
 
@@ -26,8 +26,7 @@ SpawnManager::~SpawnManager()
 
 float SpawnManager::getTerrainHeight(float x, float z) const
 {
-    // Temporary flat terrain
-    return 0.0f;
+    return TerrainController::getHeightAt(x, z);
 }
 
 Ogre::SceneNode* SpawnManager::spawnObject(
