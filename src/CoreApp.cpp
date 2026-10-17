@@ -1,6 +1,6 @@
 #include "CoreApp.h"
 
-CoreApp::CoreApp() : OgreBites::ApplicationContext("OgreTestApp"), ufoController(nullptr), mParticleManager(nullptr)
+CoreApp::CoreApp() : OgreBites::ApplicationContext("OgreTestApp"), ufoController(nullptr),trayManager(nullptr),  mParticleManager(nullptr), healthLabel(nullptr), displayedHealth(-1)
 {
 }
 
@@ -21,8 +21,16 @@ void CoreApp::setup()
     OgreBites::ApplicationContext::setup();
     addInputListener(this);
 
+    if (trayManager) {
+        removeInputListener(trayManager);
+        delete trayManager;
+        trayManager = nullptr;
+        healthLabel = nullptr;
+    }
+
     Ogre::Root *root = getRoot();
     Ogre::SceneManager *scnMgr = root->createSceneManager();
+    scnMgr->addRenderQueueListener(getOverlaySystem());
 
     Ogre::RTShader::ShaderGenerator *shadergen = Ogre::RTShader::ShaderGenerator::getSingletonPtr();
     shadergen->addSceneManager(scnMgr);
@@ -97,11 +105,22 @@ void CoreApp::setup()
     // Initialize the controller with the split nodes and the camera
     ufoController = new UFOController(scnMgr, playerRoot, visualNode, cam, mParticleManager);
 
+    
+
     //Initialize the spawn manager
     spawnManager = new SpawnManager(scnMgr);
 
     //Spawn some test objects
     spawnManager->spawnRandom(SpawnType::Cow, 50);
+
+    trayManager = new OgreBites::TrayManager("GameUI", getRenderWindow(), this);
+    trayManager -> hideCursor();
+    addInputListener(trayManager);
+    displayedHealth = ufoController->getHealth();
+    healthLabel = trayManager->createLabel(
+        OgreBites::TL_TOPLEFT, "HealthLabel",
+        "UFO HEALTH: " + std::to_string(displayedHealth), 220);
+    trayManager->showTrays();
 }
 
 bool CoreApp::keyPressed(const OgreBites::KeyboardEvent &evt)
@@ -136,6 +155,12 @@ void CoreApp::frameRendered(const Ogre::FrameEvent &evt)
     // Delegate frame updates to the controller
     if (ufoController) {
         ufoController->update(evt);
+
+         int currentHealth = ufoController->getHealth();
+        if (healthLabel && currentHealth != displayedHealth) {
+            displayedHealth = currentHealth;
+            healthLabel->setCaption("UFO HEALTH: " + std::to_string(displayedHealth));
+        }
     }
 
     if (mParticleManager) {
