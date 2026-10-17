@@ -1,11 +1,20 @@
 #include "CoreApp.h"
 
-CoreApp::CoreApp() : OgreBites::ApplicationContext("OgreTestApp"), ufoController(nullptr)
+CoreApp::CoreApp()
+        : OgreBites::ApplicationContext("OgreTestApp"), ufoController(nullptr),
+            trayManager(nullptr), healthLabel(nullptr), displayedHealth(-1)
 {
 }
 
 CoreApp::~CoreApp()
 {
+    if (trayManager) {
+        removeInputListener(trayManager);
+        delete trayManager;
+        trayManager = nullptr;
+        healthLabel = nullptr;
+    }
+
     // Clean up the dynamically allocated controller
     if (ufoController) {
         delete ufoController;
@@ -20,6 +29,7 @@ void CoreApp::setup()
 
     Ogre::Root *root = getRoot();
     Ogre::SceneManager *scnMgr = root->createSceneManager();
+    scnMgr->addRenderQueueListener(getOverlaySystem());
 
     Ogre::RTShader::ShaderGenerator *shadergen = Ogre::RTShader::ShaderGenerator::getSingletonPtr();
     shadergen->addSceneManager(scnMgr);
@@ -45,6 +55,7 @@ void CoreApp::setup()
     Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
     "../Media", "FileSystem", "General");
     Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+
     scnMgr->setSkyDome(true, "Examples/CloudySky", 5, 8, 500, true);
     scnMgr->setFog(Ogre::FOG_LINEAR, Ogre::ColourValue(0.08f, 0.15f, 0.26f), 0.0f, 220.0f, 620.0f);
 
@@ -83,6 +94,15 @@ void CoreApp::setup()
 
     // Initialize the controller with the split nodes and the camera
     ufoController = new UFOController(scnMgr, playerRoot, visualNode, cam);
+
+    trayManager = new OgreBites::TrayManager("GameUI", getRenderWindow(), this);
+    trayManager -> hideCursor();
+    addInputListener(trayManager);
+    displayedHealth = ufoController->getHealth();
+    healthLabel = trayManager->createLabel(
+        OgreBites::TL_TOPLEFT, "HealthLabel",
+        "UFO HEALTH: " + std::to_string(displayedHealth), 220);
+    trayManager->showTrays();
 }
 
 bool CoreApp::keyPressed(const OgreBites::KeyboardEvent &evt)
@@ -117,6 +137,12 @@ void CoreApp::frameRendered(const Ogre::FrameEvent &evt)
     // Delegate frame updates to the controller
     if (ufoController) {
         ufoController->update(evt);
+
+        int currentHealth = ufoController->getHealth();
+        if (healthLabel && currentHealth != displayedHealth) {
+            displayedHealth = currentHealth;
+            healthLabel->setCaption("UFO HEALTH: " + std::to_string(displayedHealth));
+        }
     }
 }
 
