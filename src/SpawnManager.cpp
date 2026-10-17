@@ -10,7 +10,7 @@
 SpawnManager::SpawnManager(Ogre::SceneManager* scnMgr)
     : mScnMgr(scnMgr),
       mRng(std::random_device{}()),
-      mPositionDistribution(20.0f, 979.0f)
+      mPositionDistribution(-500.0f, 500.0f)
 {
 }
 
@@ -45,8 +45,8 @@ SpawnManager::SpawnConfig SpawnManager::getSpawnConfig(
     {
     case SpawnType::Cow:
         return {
-            "ogrehead.mesh",
-            Ogre::Vector3(0.25f, 0.25f, 0.25f)
+            "cow.mesh",
+            Ogre::Vector3(5.f, 5.f, 5.f)
         };
 
     case SpawnType::Tank:

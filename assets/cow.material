@@ -1,0 +1,126 @@
+
+material cow.objCharcoal_brown_patches
+{
+	technique
+	{
+		pass 
+		{
+			diffuse 0.055 0.035 0.03 1
+			specular 0.5 0.5 0.5 1 32.4
+		}
+
+	}
+
+}
+
+material cow.objChocolate_hooves
+{
+	technique
+	{
+		pass 
+		{
+			diffuse 0.2 0.095 0.065 1
+			specular 0.5 0.5 0.5 1 270.4
+		}
+
+	}
+
+}
+
+material cow.objCream_horns
+{
+	technique
+	{
+		pass 
+		{
+			diffuse 0.96 0.81 0.55 1
+			specular 0.5 0.5 0.5 1 144.4
+		}
+
+	}
+
+}
+
+material cow.objEar_and_udder_blush
+{
+	technique
+	{
+		pass 
+		{
+			diffuse 0.96 0.57 0.56 1
+			specular 0.5 0.5 0.5 1 144.4
+		}
+
+	}
+
+}
+
+material cow.objEye_glints
+{
+	technique
+	{
+		pass 
+		{
+			diffuse 1 1 0.94 1
+			specular 0.5 0.5 0.5 1 774.4
+		}
+
+	}
+
+}
+
+material cow.objEye_whites
+{
+	technique
+	{
+		pass 
+		{
+			diffuse 1 0.98 0.89 1
+			specular 0.5 0.5 0.5 1 490
+		}
+
+	}
+
+}
+
+material cow.objGlossy_dark_eyes
+{
+	technique
+	{
+		pass 
+		{
+			diffuse 0.025 0.018 0.016 1
+			specular 0.5 0.5 0.5 1 705.6
+		}
+
+	}
+
+}
+
+material cow.objIvory_coat
+{
+	technique
+	{
+		pass 
+		{
+			diffuse 0.91 0.87 0.75 1
+			specular 0.5 0.5 0.5 1 144.4
+		}
+
+	}
+
+}
+
+material cow.objWarm_pink_muzzle
+{
+	technique
+	{
+		pass 
+		{
+			diffuse 0.91 0.42 0.43 1
+			specular 0.5 0.5 0.5 1 144.4
+		}
+
+	}
+
+}
