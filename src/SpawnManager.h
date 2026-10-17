@@ -21,6 +21,12 @@ public:
 
     void spawnRandom(SpawnType type, int count);
 
+    void captureCow(Ogre::SceneNode* cowNode);
+    
+    void update(float deltaTime);
+
+    void setUFONode(Ogre::SceneNode* ufoNode);
+
 private:
     Ogre::SceneManager* mScnMgr;
 
@@ -38,6 +44,31 @@ private:
     );
 
     float getTerrainHeight(float x, float z) const;
+
+    struct SpawnConfig
+    {
+        std::string meshName;
+        Ogre::Vector3 scale;
+    };
+
+    SpawnConfig getSpawnConfig(SpawnType type) const;
+
+    struct CapturedCow
+    {
+        Ogre::SceneNode* node;
+        Ogre::Vector3 startScale;
+        Ogre::Vector3 startPosition;
+        float elapsed = 0.0f;
+    };
+
+    std::vector<CapturedCow> mCapturingCows;
+
+    float mCaptureDuration = 1.5f;
+    float mCaptureSpinSpeed = 720.0f; // Degrees per second
+    float mCaptureRiseHeight = 20.0f;
+
+    Ogre::SceneNode* mUFONode = nullptr;
+    
 };
 
 #endif
