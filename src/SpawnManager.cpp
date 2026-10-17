@@ -111,10 +111,44 @@ Ogre::SceneNode* SpawnManager::spawnObject(
     node->setPosition(position);
     node->setScale(config.scale);
 
+    
     mSpawnedNodes.push_back(node);
     mSpawnedEntities.push_back(entity);
 
+    // Register every spawned cow for automatic movement
+    if (type == SpawnType::Cow)
+    {
+        Cow cow;
+        cow.node = node;
+
+        std::uniform_real_distribution<float> angleDist(
+            0.0f, Ogre::Math::TWO_PI
+        );
+
+        std::uniform_real_distribution<float> speedDist(
+            3.0f, 7.0f
+        );
+
+        std::uniform_real_distribution<float> timeDist(
+            2.0f, 5.0f
+        );
+
+        float angle = angleDist(mRng);
+
+        cow.direction = Ogre::Vector3(
+            std::sin(angle),
+            0.0f,
+            std::cos(angle)
+        );
+
+        cow.moveSpeed = speedDist(mRng);
+        cow.stateTimer = timeDist(mRng);
+
+        mCows.push_back(cow);
+    }
+
     return node;
+
 }
 
 void SpawnManager::spawnRandom(SpawnType type, int count)
@@ -180,6 +214,20 @@ void SpawnManager::captureCow(Ogre::SceneNode* cowNode)
     cow.startPosition = cowNode->getPosition();
 
     mCapturingCows.push_back(cow);
+    
+    // Remove captured cow from normal movement
+    mCows.erase(
+        std::remove_if(
+            mCows.begin(),
+            mCows.end(),
+            [cowNode](const Cow& cow)
+            {
+                return cow.node == cowNode;
+            }
+        ),
+        mCows.end()
+    );
+
 
     // Prevent additional raycast hits
     for (unsigned int i = 0;
@@ -191,6 +239,9 @@ void SpawnManager::captureCow(Ogre::SceneNode* cowNode)
 
 void SpawnManager::update(float deltaTime)
 {
+    // Update all cows before processing capture animations
+    updateCows(deltaTime);
+
     for (auto it = mCapturingCows.begin();
          it != mCapturingCows.end();)
     {
@@ -278,6 +329,100 @@ void SpawnManager::update(float deltaTime)
         }
     }
 }
+
+
+void SpawnManager::updateCows(float deltaTime)
+{
+    std::uniform_real_distribution<float> walkTime(2.0f, 5.0f);
+    std::uniform_real_distribution<float> restTime(1.0f, 3.0f);
+    std::uniform_real_distribution<float> angleDist(
+        -Ogre::Math::PI,
+        Ogre::Math::PI
+    );
+
+    for (Cow& cow : mCows)
+    {
+        if (!cow.node)
+            continue;
+
+        cow.stateTimer -= deltaTime;
+
+        // Decide whether to walk or stop grazing
+        if (cow.stateTimer <= 0.0f)
+        {
+            cow.isMoving = !cow.isMoving;
+
+            if (cow.isMoving)
+            {
+                cow.stateTimer = walkTime(mRng);
+
+                float angle = angleDist(mRng);
+
+                cow.direction = Ogre::Vector3(
+                    std::sin(angle),
+                    0.0f,
+                    std::cos(angle)
+                );
+            }
+            else
+            {
+                cow.stateTimer = restTime(mRng);
+            }
+        }
+
+        if (!cow.isMoving)
+            continue;
+
+        // Move along the terrain
+        Ogre::Vector3 position = cow.node->getPosition();
+
+        position += cow.direction * cow.moveSpeed * deltaTime;
+
+        // Stay inside the generated map
+        position.x = Ogre::Math::Clamp(
+            position.x, 20.0f, 979.0f
+        );
+
+        position.z = Ogre::Math::Clamp(
+            position.z, 20.0f, 979.0f
+        );
+
+        // Match the terrain height
+        position.y = getTerrainHeight(position.x, position.z);
+
+        cow.node->setPosition(position);
+
+        // Gradually turn toward the walking direction
+        Ogre::Radian targetYaw = Ogre::Math::ATan2(
+            cow.direction.x,
+            cow.direction.z
+        );
+
+        Ogre::Quaternion targetOrientation(
+            targetYaw,
+            Ogre::Vector3::UNIT_Y
+        );
+
+        Ogre::Quaternion currentOrientation =
+            cow.node->getOrientation();
+
+        float rotationFactor = Ogre::Math::Clamp(
+            deltaTime * 3.0f,
+            0.0f,
+            1.0f
+        );
+
+        cow.node->setOrientation(
+            Ogre::Quaternion::Slerp(
+                rotationFactor,
+                currentOrientation,
+                targetOrientation,
+                true
+            )
+        );
+    }
+}
+
 
 void SpawnManager::setUFONode(Ogre::SceneNode* ufoNode)
 {

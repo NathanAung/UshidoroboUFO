@@ -68,6 +68,25 @@ private:
     float mCaptureRiseHeight = 20.0f;
 
     Ogre::SceneNode* mUFONode = nullptr;
+
+    
+    // Movement and behavior data for every cow
+    struct Cow
+    {
+        Ogre::SceneNode* node = nullptr;
+
+        Ogre::Vector3 direction = Ogre::Vector3::UNIT_Z;
+
+        float moveSpeed = 5.0f;
+        float stateTimer = 0.0f;
+
+        bool isMoving = true;
+    };
+
+    std::vector<Cow> mCows;
+
+    void updateCows(float deltaTime);
+
     
 };
 
