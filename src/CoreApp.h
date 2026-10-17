@@ -8,6 +8,7 @@
 
 #include "UFOController.h"
 #include "SpawnManager.h"
+#include "TerrainController.h"
 
 class CoreApp 
     : public OgreBites::ApplicationContext

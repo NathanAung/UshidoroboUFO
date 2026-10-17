@@ -29,17 +29,37 @@ void CoreApp::setup()
     Ogre::Camera *cam = scnMgr->createCamera("MainCam");
     cam->setNearClipDistance(5);
     cam->setAutoAspectRatio(true);
-    getRenderWindow()->addViewport(cam);
 
-    // Light
+    Ogre::Viewport* viewport = getRenderWindow()->addViewport(cam);
+    viewport->setBackgroundColour(Ogre::ColourValue(0.08f, 0.15f, 0.26f));
+
+    // Sunset directional light
     Ogre::Light *light = scnMgr->createLight("MainLight");
+    light->setType(Ogre::Light::LT_DIRECTIONAL);
     Ogre::SceneNode *lightNode = scnMgr->getRootSceneNode()->createChildSceneNode();
-    lightNode->setPosition(20, 80, 50);
+    lightNode->setDirection(Ogre::Vector3(-0.6f, -0.8f, 0.4f).normalisedCopy());
     lightNode->attachObject(light);
-    scnMgr->setSkyBox(true, "Examples/CloudyNoonSkyBox", 5000, true);
+    light->setDiffuseColour(1.15f, 0.75f, 0.52f);
+    light->setSpecularColour(1.25f, 0.85f, 0.62f);
+    scnMgr->setAmbientLight(Ogre::ColourValue(0.22f, 0.18f, 0.26f));
+
+    Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+    "../Media", "FileSystem", "General");
+    Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+    scnMgr->setSkyDome(true, "Examples/CloudySky", 5, 8, 500, true);
+    scnMgr->setFog(Ogre::FOG_LINEAR, Ogre::ColourValue(0.08f, 0.15f, 0.26f), 0.0f, 220.0f, 620.0f);
 
     // Entity creation
     Ogre::Entity *ufoEntity = scnMgr->createEntity("UFO", "ufo.mesh");
+    ufoEntity->setMaterialName("ufo.objMaterial.005");
+
+    // Generate Terrain Mesh
+    TerrainController terrainController;
+    Ogre::Entity *terrainEntity = terrainController.GenerateTerrainMesh(scnMgr, 1000, 1000, 1.0f);
+    
+    Ogre::SceneNode *terrainNode = scnMgr->getRootSceneNode()->createChildSceneNode("TerrainNode");
+    terrainNode->attachObject(terrainEntity);
+    terrainNode->setPosition(0, -50, 0); // Adjust the Y position to lower the terrain
 
     ufoEntity->setQueryFlags(PLAYER_MASK);
     
