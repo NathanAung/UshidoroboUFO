@@ -1,0 +1,154 @@
+Warning: Skipping 'HW_VTFInstancing.vert' because it already exists in resource group 'General'
+Warning: Skipping 'Instancing.frag' because it already exists in resource group 'General'
+Warning: Skipping 'VTFInstancing.vert' because it already exists in resource group 'General'
+Warning: Skipping 'README.md' because it already exists in resource group 'General'
+Warning: Skipping 'README.txt' because it already exists in resource group 'General'
+Error: ScriptCompiler - invalid parameters in glTF2_PBR.material(37): overriding previous declarations of texture 'black.png' with different parameters
+Error: ScriptCompiler - invalid parameters in glTF2_PBR.material(68): Parameter called u_BaseColorSampler does not exist. 
+Error: ScriptCompiler - invalid parameters in glTF2_PBR.material(69): Parameter called u_NormalSampler does not exist. 
+Error: ScriptCompiler - invalid parameters in glTF2_PBR.material(70): Parameter called u_EmissiveSampler does not exist. 
+Error: ScriptCompiler - invalid parameters in glTF2_PBR.material(71): Parameter called u_MetallicRoughnessSampler does not exist. 
+Error: ScriptCompiler - invalid parameters in glTF2_PBR.material(72): Parameter called u_OcclusionSampler does not exist. 
+Error: ScriptCompiler - invalid parameters in glTF2_PBR.material(73): Parameter called u_DiffuseEnvSampler does not exist. 
+Error: ScriptCompiler - invalid parameters in glTF2_PBR.material(74): Parameter called u_SpecularEnvSampler does not exist. 
+Error: ScriptCompiler - invalid parameters in glTF2_PBR.material(75): Parameter called u_brdfLUT does not exist. 
+Error: ScriptCompiler - invalid parameters in glTF2_PBR.material(79): Parameter called u_ScaleFGDSpec does not exist. 
+Error: ScriptCompiler - invalid parameters in glTF2_PBR.material(80): Parameter called u_ScaleDiffBaseMR does not exist. 
+Error: ScriptCompiler - invalid parameters in AdaptivePNTrianglesTessellation.material(11): Parameter called g_WorldViewprojMatrix does not exist. 
+Error: ScriptCompiler - invalid parameters in AdaptivePNTrianglesTessellation.material(23): Parameter called g_AmbientLightColour does not exist. 
+Error: ScriptCompiler - invalid parameters in AdaptivePNTrianglesTessellation.material(36): Parameter called g_WorldViewprojMatrix does not exist. 
+Error: ScriptCompiler - invalid parameters in AdaptivePNTrianglesTessellation.material(37): Parameter called g_WorldInverseTranspose does not exist. 
+Error: ScriptCompiler - invalid parameters in AdaptivePNTrianglesTessellation.material(38): Parameter called g_World does not exist. 
+Error: ScriptCompiler - invalid parameters in AdaptivePNTrianglesTessellation.material(39): Parameter called g_InverseView does not exist. 
+Error: ScriptCompiler - invalid parameters in AdaptivePNTrianglesTessellation.material(51): Parameter called g_AmbientLightColour does not exist. 
+Error: ScriptCompiler - invalid parameters in AdaptivePNTrianglesTessellation.material(52): Parameter called g_LightDirection does not exist. 
+Error: ScriptCompiler - invalid parameters in AdaptivePNTrianglesTessellation.material(53): Parameter called g_LightDiffuseColour does not exist. 
+Error: ScriptCompiler - invalid parameters in AdaptivePNTrianglesTessellation.material(54): Parameter called g_DiffuseColour does not exist. 
+Error: ScriptCompiler - invalid parameters in AdaptivePNTrianglesTessellation.material(55): Parameter called g_SpecularColor does not exist. 
+Error: ScriptCompiler - invalid parameters in AdaptivePNTrianglesTessellation.material(56): Parameter called g_FresnelColor does not exist. 
+Error: ScriptCompiler - invalid parameters in AdaptivePNTrianglesTessellation.material(57): Parameter called g_SpecularPower does not exist. 
+Error: ScriptCompiler - invalid parameters in AdaptivePNTrianglesTessellation.material(58): Parameter called g_FresnelPower does not exist. 
+Error: ScriptCompiler - invalid parameters in AdaptivePNTrianglesTessellation.material(136): Parameter called g_tessellationAmount does not exist. 
+Error: ScriptCompiler - invalid parameters in AdaptivePNTrianglesTessellation.material(148): Parameter called g_WorldViewprojMatrix does not exist. 
+Error: ScriptCompiler - invalid parameters in AdaptivePNTrianglesTessellation.material(149): Parameter called g_WorldMatrix does not exist. 
+Error: ScriptCompiler - invalid parameters in AdaptivePNTrianglesTessellation.material(150): Parameter called g_ViewMatrix does not exist. 
+Error: ScriptCompiler - invalid parameters in AdaptivePNTrianglesTessellation.material(151): Parameter called g_ProjectionMatrix does not exist. 
+Program 'Ogre/PNTrianglesTessellation/adaptive_tessellation_hs' is not supported: Cannot compile D3D11 high-level shader Ogre/PNTrianglesTessellation/adaptive_tessellation_hs Errors:
+C:\Users\MiniPC\Documents\GitHub\UshidoroboUFO\adaptive_tessellation.hlsl(148,67-71): error X4576: Input signature parameter SV_Position (1-based Entry 0) type must be float32 and mask must be xyzw. 
+
+Program 'Ogre/PNTrianglesTessellation/adaptivePNTriangles_tessellation_vs' is not supported: Cannot compile D3D11 high-level shader Ogre/PNTrianglesTessellation/adaptivePNTriangles_tessellation_vs Errors:
+C:\Users\MiniPC\Documents\GitHub\UshidoroboUFO\adaptivePNTriangles_tessellation.hlsl(92,35-58): error X4577: Not all elements of SV_Position were written
+C:\Users\MiniPC\Documents\GitHub\UshidoroboUFO\adaptivePNTriangles_tessellation.hlsl(92,35-58): error X4576: Output signature parameter SV_Position (1-based Entry 0) type must be float32 and mask must be xyzw. 
+
+Program 'Ogre/PNTrianglesTessellation/adaptivePNTriangles_tessellation_hs' is not supported: Cannot compile D3D11 high-level shader Ogre/PNTrianglesTessellation/adaptivePNTriangles_tessellation_hs Errors:
+C:\Users\MiniPC\Documents\GitHub\UshidoroboUFO\adaptivePNTriangles_tessellation.hlsl(196,67-71): error X4576: Input signature parameter SV_Position (1-based Entry 0) type must be float32 and mask must be xyzw. 
+
+Program 'Ogre/PNTrianglesTessellation/adaptivePNTriangles_tessellation_ds' is not supported: Cannot compile D3D11 high-level shader Ogre/PNTrianglesTessellation/adaptivePNTriangles_tessellation_ds Errors:
+C:\Users\MiniPC\Documents\GitHub\UshidoroboUFO\adaptivePNTriangles_tessellation.hlsl(213,152-156): error X4576: Input signature parameter SV_Position (1-based Entry 0) type must be float32 and mask must be xyzw. 
+
+Error: ScriptCompiler - invalid parameters in AdaptivePNTrianglesTessellation.material(301): Parameter called lightDiffuseColor does not exist. 
+Error: ScriptCompiler - invalid parameters in AdaptivePNTrianglesTessellation.material(302): Parameter called lightSpecularColor does not exist. 
+Error: ScriptCompiler - invalid parameters in AdaptivePNTrianglesTessellation.material(303): Parameter called lightDirection does not exist. 
+Error: ScriptCompiler - invalid parameters in AdaptivePNTrianglesTessellation.material(304): Parameter called lightPosition does not exist. 
+Error: ScriptCompiler - invalid parameters in AdaptivePNTrianglesTessellation.material(305): Parameter called lightAttenuation does not exist. 
+Error: ScriptCompiler - invalid parameters in AdaptivePNTrianglesTessellation.material(306): Parameter called surfaceDiffuseColour does not exist. 
+Error: ScriptCompiler - invalid parameters in AdaptivePNTrianglesTessellation.material(307): Parameter called surfaceSpecularColour does not exist. 
+Error: ScriptCompiler - invalid parameters in AdaptivePNTrianglesTessellation.material(308): Parameter called surfaceShininess does not exist. 
+Error: ScriptCompiler - invalid parameters in glTF2_PBR.material(68): Parameter called u_BaseColorSampler does not exist. 
+Error: ScriptCompiler - invalid parameters in glTF2_PBR.material(69): Parameter called u_NormalSampler does not exist. 
+Error: ScriptCompiler - invalid parameters in glTF2_PBR.material(70): Parameter called u_EmissiveSampler does not exist. 
+Error: ScriptCompiler - invalid parameters in glTF2_PBR.material(71): Parameter called u_MetallicRoughnessSampler does not exist. 
+Error: ScriptCompiler - invalid parameters in glTF2_PBR.material(72): Parameter called u_OcclusionSampler does not exist. 
+Error: ScriptCompiler - invalid parameters in glTF2_PBR.material(73): Parameter called u_DiffuseEnvSampler does not exist. 
+Error: ScriptCompiler - invalid parameters in glTF2_PBR.material(74): Parameter called u_SpecularEnvSampler does not exist. 
+Error: ScriptCompiler - invalid parameters in glTF2_PBR.material(75): Parameter called u_brdfLUT does not exist. 
+Error: ScriptCompiler - invalid parameters in glTF2_PBR.material(79): Parameter called u_ScaleFGDSpec does not exist. 
+Error: ScriptCompiler - invalid parameters in glTF2_PBR.material(80): Parameter called u_ScaleDiffBaseMR does not exist. 
+Error: ScriptCompiler - invalid parameters in DOF.material(17): Parameter called scene does not exist. 
+Error: ScriptCompiler - invalid parameters in DOF.material(18): Parameter called depth does not exist. 
+Error: ScriptCompiler - invalid parameters in DOF.material(19): Parameter called blur does not exist. 
+Error: ScriptCompiler - invalid parameters in Examples-Advanced.material(269): Parameter called noiseMap does not exist. 
+Error: ScriptCompiler - invalid parameters in Examples-Advanced.material(270): Parameter called reflectMap does not exist. 
+Error: ScriptCompiler - invalid parameters in Examples-Advanced.material(271): Parameter called refractMap does not exist. 
+Error: ScriptCompiler - invalid parameters in Examples-Advanced.material(384): Parameter called TextureArrayTex does not exist. 
+Error: ScriptCompiler - invalid parameters in Examples-Water.material(130): overriding previous declarations of texture 'studio_garden.jpg' with different parameters
+Error: ScriptCompiler - invalid parameters in hdr.material(81): Parameter called inRTT does not exist. 
+Error: ScriptCompiler - invalid parameters in hdr.material(82): Parameter called inLum does not exist. 
+Error: ScriptCompiler - invalid parameters in hdr.material(127): Parameter called inRTT does not exist. 
+Error: ScriptCompiler - invalid parameters in hdr.material(166): Parameter called inRTT does not exist. 
+Error: ScriptCompiler - invalid parameters in hdr.material(167): Parameter called inBloom does not exist. 
+Error: ScriptCompiler - invalid parameters in hdr.material(168): Parameter called inLum does not exist. 
+Error: ScriptCompiler - invalid parameters in HeatVision.material(68): Parameter called worldViewProj does not exist. 
+Error: ScriptCompiler - invalid parameters in HeatVision.material(145): Parameter called worldViewProj does not exist. 
+Error: ScriptCompiler - invalid parameters in Island.material(110): Parameter called g_MainBufferSizeMultiplier does not exist. 
+Error: ScriptCompiler - invalid parameters in Island.material(156): Parameter called g_CameraPosition does not exist. 
+Error: ScriptCompiler - invalid parameters in Island.material(157): Parameter called g_WaterBumpTexcoordShift does not exist. 
+Error: ScriptCompiler - invalid parameters in Island.material(203): Parameter called g_FrustumCullInHS does not exist. 
+Error: ScriptCompiler - invalid parameters in Island.material(204): Parameter called g_TerrainBeingRendered does not exist. 
+Error: ScriptCompiler - invalid parameters in Island.material(205): Parameter called g_ModelViewProjectionMatrix does not exist. 
+Error: ScriptCompiler - invalid parameters in Island.material(206): Parameter called g_CameraPosition does not exist. 
+Error: ScriptCompiler - invalid parameters in Island.material(207): Parameter called g_CameraDirection does not exist. 
+Error: ScriptCompiler - invalid parameters in Island.material(219): Parameter called g_RenderCaustics does not exist. 
+Error: ScriptCompiler - invalid parameters in Island.material(220): Parameter called g_UseDynamicLOD does not exist. 
+Error: ScriptCompiler - invalid parameters in Island.material(221): Parameter called g_DynamicTessFactor does not exist. 
+Error: ScriptCompiler - invalid parameters in Island.material(222): Parameter called g_StaticTessFactor does not exist. 
+Error: ScriptCompiler - invalid parameters in Island.material(223): Parameter called g_SkipCausticsCalculation does not exist. 
+Error: ScriptCompiler - invalid parameters in Island.material(224): Parameter called g_ModelViewProjectionMatrix does not exist. 
+Error: ScriptCompiler - invalid parameters in Island.material(225): Parameter called g_CameraPosition does not exist. 
+Error: ScriptCompiler - invalid parameters in Island.material(237): Parameter called g_HalfSpaceCullSign does not exist. 
+Error: ScriptCompiler - invalid parameters in Island.material(238): Parameter called g_HalfSpaceCullPosition does not exist. 
+Error: ScriptCompiler - invalid parameters in Island.material(239): Parameter called g_LightModelViewProjectionMatrix does not exist. 
+Error: ScriptCompiler - invalid parameters in Island.material(240): Parameter called g_CameraPosition does not exist. 
+Error: ScriptCompiler - number expected in Island.material(241): <extraInfo> parameter required by constant definition light_position
+Error: ScriptCompiler - invalid parameters in Island.material(317): Parameter called g_UseDynamicLOD does not exist. 
+Error: ScriptCompiler - invalid parameters in Island.material(318): Parameter called g_DynamicTessFactor does not exist. 
+Error: ScriptCompiler - invalid parameters in Island.material(319): Parameter called g_StaticTessFactor does not exist. 
+Error: ScriptCompiler - invalid parameters in Island.material(320): Parameter called g_ModelViewProjectionMatrix does not exist. 
+Error: ScriptCompiler - invalid parameters in Island.material(321): Parameter called g_CameraPosition does not exist. 
+Error: ScriptCompiler - number expected in Island.material(322): <extraInfo> parameter required by constant definition light_position
+Error: ScriptCompiler - invalid parameters in Island.material(323): Parameter called g_WaterBumpTexcoordShift does not exist. 
+Program 'Ogre/Island/WaterPatchPS' is not supported: Cannot compile D3D11 high-level shader Ogre/Island/WaterPatchPS Errors:
+error X3501: 'WaterPatchPS': entrypoint not found
+
+Error: ScriptCompiler - invalid parameters in LigthShafts.material(26): Parameter called uDepthMap does not exist. 
+Error: ScriptCompiler - invalid parameters in LigthShafts.material(27): Parameter called uCookieMap does not exist. 
+Error: ScriptCompiler - invalid parameters in LigthShafts.material(28): Parameter called uNoiseMap does not exist. 
+Warning: ScriptCompiler - deprecated symbol in skybox.material(13): separateUV is no longer supported.
+Program 'Ogre/TerrainTessellation/HwTessellationPassThruVS' is not supported: Cannot compile D3D11 high-level shader Ogre/TerrainTessellation/HwTessellationPassThruVS Errors:
+TerrainTessellation.hlsl(239,48-79): warning X3576: semantics in type overridden by variable/function or enclosing type
+TerrainTessellation.hlsl(239,48-79): error X4577: Not all elements of SV_Position were written
+TerrainTessellation.hlsl(239,48-79): error X4576: Output signature parameter SV_Position (1-based Entry 0) type must be float32 and mask must be xyzw. 
+
+Error: ScriptCompiler - invalid parameters in TerrainTessellation.material(111): Parameter called g_WorldViewProj does not exist. 
+Error: ScriptCompiler - invalid parameters in TerrainTessellation.material(112): Parameter called g_DebugShowTiles does not exist. 
+Error: ScriptCompiler - invalid parameters in TerrainTessellation.material(113): Parameter called g_DebugShowPatches does not exist. 
+Error: ScriptCompiler - invalid parameters in TerrainTessellation.material(114): Parameter called g_DetailNoiseScale does not exist. 
+Error: ScriptCompiler - invalid parameters in TerrainTessellation.material(115): Parameter called g_tileSize does not exist. 
+Error: ScriptCompiler - invalid parameters in TerrainTessellation.material(116): Parameter called g_DetailUVScale does not exist. 
+Error: ScriptCompiler - invalid parameters in TerrainTessellation.material(117): Parameter called g_TextureWorldOffset does not exist. 
+Program 'Ogre/TerrainTessellation/TerrainScreenspaceLODHS' is not supported: Cannot compile D3D11 high-level shader Ogre/TerrainTessellation/TerrainScreenspaceLODHS Errors:
+TerrainTessellation.hlsl(518,74): warning X3576: semantics in type overridden by variable/function or enclosing type
+TerrainTessellation.hlsl(414,97-98): warning X3576: semantics in type overridden by variable/function or enclosing type
+TerrainTessellation.hlsl(400,6-17): warning X3556: integer modulus may be much slower, try using uints if possible.
+TerrainTessellation.hlsl(518,74): error X4576: Input signature parameter SV_Position (1-based Entry 0) type must be float32 and mask must be xyzw. 
+
+Program 'Ogre/TerrainTessellation/TerrainDisplaceDS' is not supported: Cannot compile D3D11 high-level shader Ogre/TerrainTessellation/TerrainDisplaceDS Errors:
+TerrainTessellation.hlsl(599,53-63): error X4576: Input signature parameter SV_Position (1-based Entry 0) type must be float32 and mask must be xyzw. 
+
+Program 'Ogre/Tessellation/TessellationHullProgramHLSL' is not supported: Cannot compile D3D11 high-level shader Ogre/Tessellation/TessellationHullProgramHLSL Errors:
+C:\Users\MiniPC\Documents\GitHub\UshidoroboUFO\Tessellation.hlsl(56,76-77): error X4576: Input signature parameter SV_Position (1-based Entry 0) type must be float32 and mask must be xyzw. 
+
+Program 'Ogre/Tessellation/TessellationDomainProgramHLSL' is not supported: Cannot compile D3D11 high-level shader Ogre/Tessellation/TessellationDomainProgramHLSL Errors:
+C:\Users\MiniPC\Documents\GitHub\UshidoroboUFO\Tessellation.hlsl(97,53-56): error X4576: Input signature parameter SV_Position (1-based Entry 0) type must be float32 and mask must be xyzw. 
+
+Program 'Ogre/Tessellation/VertexProgramHLSL' is not supported: Cannot compile D3D11 high-level shader Ogre/Tessellation/VertexProgramHLSL Errors:
+C:\Users\MiniPC\Documents\GitHub\UshidoroboUFO\Tessellation.hlsl(35,26-58): error X4577: Not all elements of SV_Position were written
+C:\Users\MiniPC\Documents\GitHub\UshidoroboUFO\Tessellation.hlsl(35,26-58): error X4576: Output signature parameter SV_Position (1-based Entry 0) type must be float32 and mask must be xyzw. 
+
+Error: ScriptCompiler - invalid parameters in WBOIT.material(22): Parameter called accumTexture does not exist. 
+Error: ScriptCompiler - invalid parameters in WBOIT.material(23): Parameter called revealageTexture does not exist. 
+Error: ShadowReceiverFP - default cbuffer already exists. Ignoring $Params
+Error: ScriptCompiler - invalid parameters in CSMShadows.material(66): Parameter called lightDirection does not exist. 
+Error: ScriptCompiler - invalid parameters in CSMShadows.material(67): Parameter called ambientColor does not exist. 
+Error: ScriptCompiler - invalid parameters in CSMShadows.material(74): Parameter called shadowFadeDist does not exist. 
+Error: ScriptCompiler - invalid parameters in CSMShadows.material(75): Parameter called shadowMaxDist does not exist. 

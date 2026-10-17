@@ -38,9 +38,9 @@ void CoreApp::setup()
     Ogre::SceneNode *lightNode = scnMgr->getRootSceneNode()->createChildSceneNode();
     lightNode->setDirection(Ogre::Vector3(-0.6f, -0.8f, 0.4f).normalisedCopy());
     lightNode->attachObject(light);
-    light->setDiffuseColour(1.15f, 0.75f, 0.52f);
-    light->setSpecularColour(1.25f, 0.85f, 0.62f);
-    scnMgr->setAmbientLight(Ogre::ColourValue(0.22f, 0.18f, 0.26f));
+    light->setDiffuseColour(1.45f, 0.92f, 0.60f);
+    light->setSpecularColour(1.65f, 1.05f, 0.72f);
+    scnMgr->setAmbientLight(Ogre::ColourValue(0.28f, 0.24f, 0.32f));
 
     Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
     "../Media", "FileSystem", "General");
