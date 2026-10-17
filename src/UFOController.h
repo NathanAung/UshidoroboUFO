@@ -66,6 +66,10 @@ private:
     float mBaseSpeed;
     float mCurrentSpeed; // Tracks the active speed multiplier
 
+    // spotlight
+    Ogre::Light* mSpotlight;
+    Ogre::SceneNode* mSpotlightNode;
+
     // C++11 Random Number Generation
     std::mt19937 mRng;
     std::uniform_real_distribution<float> mSpeedDistribution;

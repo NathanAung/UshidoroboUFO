@@ -55,6 +55,30 @@ UFOController::UFOController(
     // Capture raycast
     mRaySceneQuery =
         mScnMgr->createRayQuery(Ogre::Ray());
+
+    // Create the light object
+    mSpotlight = mScnMgr->createLight("UFOSpotlight");
+    mSpotlight->setType(Ogre::Light::LT_SPOTLIGHT);
+    
+    // Set the color (e.g., a slightly eerie alien green/cyan). 
+    // Format is (Red, Green, Blue) from 0.0 to 1.0.
+    mSpotlight->setDiffuseColour(0.4f, 1.0f, 0.8f); 
+    mSpotlight->setSpecularColour(1.0f, 1.0f, 1.0f);
+    
+    // Define the cone of the spotlight
+    // Inner angle (fully bright) and Outer angle (fades to black)
+    mSpotlight->setSpotlightRange(Ogre::Degree(15.0f), Ogre::Degree(35.0f));
+    
+    // Set the attenuation (range and falloff)
+    // Range: 500 units, Constant: 1.0, Linear: 0.005, Quadratic: 0.0
+    mSpotlight->setAttenuation(500.0f, 1.0f, 0.005f, 0.0f);
+
+    // Attach it to a new node on the Player Root
+    mSpotlightNode = mPlayerRoot->createChildSceneNode("UFOSpotlightNode");
+    mSpotlightNode->attachObject(mSpotlight);
+    
+    // Point the node directly downwards
+    mSpotlightNode->setDirection(Ogre::Vector3(0, -1, 0), Ogre::Node::TS_PARENT);
 }
 
 UFOController::~UFOController()
@@ -89,6 +113,9 @@ void UFOController::takeDamage(int amount)
     {
         mIsDead = true;
         mVisualNode->setVisible(false);
+
+        // Turn off the spotlight
+        mSpotlight->setVisible(false); 
 
         if (mParticleManager)
         {
