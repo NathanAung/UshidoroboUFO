@@ -65,6 +65,12 @@ private:
     std::mt19937 mRng;
     std::uniform_real_distribution<float> mSpeedDistribution;
 
+    // timer
+    float mGameTimer;
+    bool mTimeIsUp;
+    bool mPrinted30Sec;
+    bool mPrinted10Sec;
+
     // Mock terrain function to be replaced by terrain generation
     float getTerrainHeight(float x, float z) const;
 };

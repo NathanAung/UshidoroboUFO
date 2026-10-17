@@ -5,7 +5,8 @@ UFOController::UFOController(Ogre::SceneManager* scnMgr, Ogre::SceneNode* player
     : mScnMgr(scnMgr), mPlayerRoot(playerRoot), mVisualNode(visualNode), mParticleManager(particleMgr),
       mCowsAbducted(0), mHealth(5), mIsDead(false), mInvulnerabilityTimer(0.0f), mHoverAltitude(30.0f),
       mGoingForward(false), mGoingBack(false), mGoingLeft(false), mGoingRight(false),
-      mBaseSpeed(100.0f), mCurrentSpeed(100.0f) // Adjust this value to match the game's scale
+      mBaseSpeed(100.0f), mCurrentSpeed(100.0f), // Adjust this value to match the game's scale
+      mGameTimer(60.0f), mTimeIsUp(false), mPrinted30Sec(false), mPrinted10Sec(false)   // CHANGE mGameTimer to 180.0f LATER
 {
     // Seed the random number generator
     std::random_device rd;
@@ -52,8 +53,8 @@ float UFOController::getTerrainHeight(float x, float z) const
 
 void UFOController::takeDamage(int amount)
 {
-    // Ignore damage if already dead or invulnerable
-    if (mIsDead || mInvulnerabilityTimer > 0.0f) return;
+    // Ignore damage if dead, invulnerable, or if the game timer has ended
+    if (mIsDead || mTimeIsUp || mInvulnerabilityTimer > 0.0f) return;
 
     mHealth -= amount;
     mInvulnerabilityTimer = 1.5f; 
@@ -88,6 +89,34 @@ void UFOController::update(const Ogre::FrameEvent& evt)
 {
     if (!mPlayerRoot || !mVisualNode) return;
 
+    // --- Timer Logic ---
+    if (!mTimeIsUp && !mIsDead) 
+    {
+        mGameTimer -= evt.timeSinceLastFrame;
+
+        // Print debug messages at specific thresholds
+        if (mGameTimer <= 30.0f && !mPrinted30Sec) {
+            Ogre::LogManager::getSingleton().logMessage("DEBUG: 30 seconds left!");
+            mPrinted30Sec = true;
+        }
+        if (mGameTimer <= 10.0f && !mPrinted10Sec) {
+            Ogre::LogManager::getSingleton().logMessage("DEBUG: 10 seconds left!");
+            mPrinted10Sec = true;
+        }
+
+        // Handle Time Over state
+        if (mGameTimer <= 0.0f) {
+            mGameTimer = 0.0f;
+            mTimeIsUp = true;
+            
+            // Halt any current directional movement
+            mGoingForward = mGoingBack = mGoingLeft = mGoingRight = false;
+            
+            Ogre::LogManager::getSingleton().logMessage("TIME IS UP!");
+            Ogre::LogManager::getSingleton().logMessage("Final Score: Cows Abducted = " + std::to_string(mCowsAbducted));
+        }
+    }
+
     // If dead, bypass all movement, terrain following, and spinning logic
     if (mIsDead) return; 
 
@@ -99,21 +128,25 @@ void UFOController::update(const Ogre::FrameEvent& evt)
     // Spin the visual mesh independently
     mVisualNode->yaw(Ogre::Degree(10.0f * evt.timeSinceLastFrame));
 
-    // Calculate movement direction
-    Ogre::Vector3 moveDir(Ogre::Vector3::ZERO);
+    // movement logic
+    if (!mTimeIsUp) 
+    {
+        // Calculate movement direction
+        Ogre::Vector3 moveDir(Ogre::Vector3::ZERO);
 
-    // Standard 3D plane movement (X/Z plane)
-    if (mGoingForward) moveDir.z -= 1.0f;
-    if (mGoingBack)    moveDir.z += 1.0f;
-    if (mGoingLeft)    moveDir.x -= 1.0f;
-    if (mGoingRight)   moveDir.x += 1.0f;
+        // Standard 3D plane movement (X/Z plane)
+        if (mGoingForward) moveDir.z -= 1.0f;
+        if (mGoingBack)    moveDir.z += 1.0f;
+        if (mGoingLeft)    moveDir.x -= 1.0f;
+        if (mGoingRight)   moveDir.x += 1.0f;
 
-    // Normalize the vector so diagonal movement isn't faster than straight movement
-    moveDir.normalise();
+        // Normalize the vector so diagonal movement isn't faster than straight movement
+        moveDir.normalise();
 
-    // Apply continuous translation based on speed and time delta
-    if (moveDir != Ogre::Vector3::ZERO) {
-        mPlayerRoot->translate(moveDir * mCurrentSpeed * evt.timeSinceLastFrame, Ogre::Node::TS_WORLD);
+        // Apply continuous translation based on speed and time delta
+        if (moveDir != Ogre::Vector3::ZERO) {
+            mPlayerRoot->translate(moveDir * mCurrentSpeed * evt.timeSinceLastFrame, Ogre::Node::TS_WORLD);
+        }
     }
 
     // --- Terrain Following Logic ---
@@ -130,7 +163,8 @@ void UFOController::update(const Ogre::FrameEvent& evt)
 
 void UFOController::injectKeyDown(const OgreBites::KeyboardEvent& evt)
 {
-    if (mIsDead) return;
+    // Ignore all input (Movement, Hyperspeed, Abduction) if dead or time is up
+    if (mIsDead || mTimeIsUp) return;
 
     OgreBites::Keycode key = evt.keysym.sym;
 
@@ -193,7 +227,8 @@ void UFOController::injectKeyDown(const OgreBites::KeyboardEvent& evt)
 
 void UFOController::injectKeyUp(const OgreBites::KeyboardEvent& evt)
 {
-    if (mIsDead) return;
+    // Ignore key releases to prevent state bugs if time runs out while a key is held
+    if (mIsDead || mTimeIsUp) return;
     
     OgreBites::Keycode key = evt.keysym.sym;
 
