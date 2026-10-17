@@ -1,5 +1,6 @@
 
 #include "CoreApp.h"
+#include <cmath>
 
 CoreApp::CoreApp()
     : OgreBites::ApplicationContext("OgreTestApp"),
@@ -8,7 +9,11 @@ CoreApp::CoreApp()
       trayManager(nullptr),
       mParticleManager(nullptr),
       healthLabel(nullptr),
-      displayedHealth(-1)
+    timerLabel(nullptr),
+    cowCountLabel(nullptr),
+    displayedHealth(-1),
+    displayedTimeSeconds(-1),
+    displayedCowCount(-1)
 {
 }
 
@@ -156,6 +161,13 @@ void CoreApp::setup()
     healthLabel = trayManager->createLabel(
         OgreBites::TL_TOPLEFT, "HealthLabel",
         "UFO HEALTH: " + std::to_string(displayedHealth), 220);
+    displayedTimeSeconds = static_cast<int>(std::ceil(ufoController->getRemainingTime()));
+    timerLabel = trayManager->createLabel(
+        OgreBites::TL_TOPRIGHT, "TimerLabel", "TIME: 01:00", 220);
+    displayedCowCount = ufoController->getCowsAbducted();
+    cowCountLabel = trayManager->createLabel(
+        OgreBites::TL_TOPRIGHT, "CowCountLabel",
+        "COWS: " + std::to_string(displayedCowCount), 220);
     trayManager->showTrays();
 }
 
@@ -200,6 +212,29 @@ void CoreApp::frameRendered(const Ogre::FrameEvent& evt)
             healthLabel->setCaption(
                 "UFO HEALTH: " +
                 std::to_string(displayedHealth)
+            );
+        }
+
+        int remainingSeconds = static_cast<int>(
+            std::ceil(ufoController->getRemainingTime())
+        );
+        if (timerLabel && remainingSeconds != displayedTimeSeconds)
+        {
+            displayedTimeSeconds = remainingSeconds;
+            int minutes = remainingSeconds / 60;
+            int seconds = remainingSeconds % 60;
+            timerLabel->setCaption(
+                "TIME: " + std::to_string(minutes) + ":" +
+                (seconds < 10 ? "0" : "") + std::to_string(seconds)
+            );
+        }
+
+        int currentCowCount = ufoController->getCowsAbducted();
+        if (cowCountLabel && currentCowCount != displayedCowCount)
+        {
+            displayedCowCount = currentCowCount;
+            cowCountLabel->setCaption(
+                "COWS: " + std::to_string(displayedCowCount)
             );
         }
     }

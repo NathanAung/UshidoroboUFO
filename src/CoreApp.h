@@ -40,7 +40,11 @@ private:
 
     OgreBites::TrayManager* trayManager;
     OgreBites::Label* healthLabel;
+    OgreBites::Label* timerLabel;
+    OgreBites::Label* cowCountLabel;
     int displayedHealth;
+    int displayedTimeSeconds;
+    int displayedCowCount;
 };
 
 #endif

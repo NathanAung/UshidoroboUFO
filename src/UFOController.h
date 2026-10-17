@@ -31,6 +31,7 @@ public:
 
     int getCowsAbducted() const { return mCowsAbducted; }
     int getHealth() const { return mHealth; }
+    float getRemainingTime() const { return mGameTimer; }
 
     // Allows enemy AI to deal damage to the UFO
     void takeDamage(int amount);
