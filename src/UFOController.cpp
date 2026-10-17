@@ -2,6 +2,7 @@
 #include "UFOController.h"
 #include "SpawnManager.h"
 
+
 UFOController::UFOController(
     Ogre::SceneManager* scnMgr,
     Ogre::SceneNode* playerRoot,
@@ -24,7 +25,12 @@ UFOController::UFOController(
       mGoingLeft(false),
       mGoingRight(false),
       mBaseSpeed(100.0f),
-      mCurrentSpeed(100.0f)
+      mCurrentSpeed(100.0f),
+      mGameTimer(60.0f),
+      mTimeIsUp(false),
+      mPrinted30Sec(false),
+      mPrinted10Sec(false)
+      // CHANGE mGameTimer to 180.0f LATER
 {
     std::random_device rd;
     mRng = std::mt19937(rd());
@@ -73,8 +79,8 @@ float UFOController::getTerrainHeight(float x, float z) const
 
 void UFOController::takeDamage(int amount)
 {
-    if (mIsDead || mInvulnerabilityTimer > 0.0f)
-        return;
+    // Ignore damage if dead, invulnerable, or if the game timer has ended
+    if (mIsDead || mTimeIsUp || mInvulnerabilityTimer > 0.0f) return;
 
     mHealth -= amount;
     mInvulnerabilityTimer = 1.5f;
@@ -120,33 +126,68 @@ void UFOController::update(const Ogre::FrameEvent& evt)
     if (!mPlayerRoot || !mVisualNode)
         return;
 
-    if (mIsDead)
-        return;
+    // --- Timer Logic ---
+    if (!mTimeIsUp && !mIsDead) 
+    {
+        mGameTimer -= evt.timeSinceLastFrame;
+
+        // Print debug messages at specific thresholds
+        if (mGameTimer <= 30.0f && !mPrinted30Sec) {
+            Ogre::LogManager::getSingleton().logMessage("DEBUG: 30 seconds left!");
+            mPrinted30Sec = true;
+        }
+        if (mGameTimer <= 10.0f && !mPrinted10Sec) {
+            Ogre::LogManager::getSingleton().logMessage("DEBUG: 10 seconds left!");
+            mPrinted10Sec = true;
+        }
+
+        // Handle Time Over state
+        if (mGameTimer <= 0.0f) {
+            mGameTimer = 0.0f;
+            mTimeIsUp = true;
+            
+            // Halt any current directional movement
+            mGoingForward = mGoingBack = mGoingLeft = mGoingRight = false;
+            
+            Ogre::LogManager::getSingleton().logMessage("TIME IS UP!");
+            Ogre::LogManager::getSingleton().logMessage("Final Score: Cows Abducted = " + std::to_string(mCowsAbducted));
+        }
+    }
+
+    // If dead, bypass all movement, terrain following, and spinning logic
+    if (mIsDead) return; 
 
     float dt = evt.timeSinceLastFrame;
 
     if (mInvulnerabilityTimer > 0.0f)
         mInvulnerabilityTimer -= dt;
 
+
     // UFO visual rotation
     mVisualNode->yaw(Ogre::Degree(10.0f * dt));
 
-    Ogre::Vector3 moveDir = Ogre::Vector3::ZERO;
-
-    if (mGoingForward) moveDir.z -= 1.0f;
-    if (mGoingBack)    moveDir.z += 1.0f;
-    if (mGoingLeft)    moveDir.x -= 1.0f;
-    if (mGoingRight)   moveDir.x += 1.0f;
-
-    if (moveDir != Ogre::Vector3::ZERO)
+    // Only allow movement while time remains
+    if (!mTimeIsUp)
     {
-        moveDir.normalise();
+        Ogre::Vector3 moveDir = Ogre::Vector3::ZERO;
 
-        mPlayerRoot->translate(
-            moveDir * mCurrentSpeed * dt,
-            Ogre::Node::TS_WORLD
-        );
+        if (mGoingForward) moveDir.z -= 1.0f;
+        if (mGoingBack)    moveDir.z += 1.0f;
+        if (mGoingLeft)    moveDir.x -= 1.0f;
+        if (mGoingRight)   moveDir.x += 1.0f;
+
+        if (moveDir != Ogre::Vector3::ZERO)
+        {
+            moveDir.normalise();
+
+            mPlayerRoot->translate(
+                moveDir * mCurrentSpeed * dt,
+                Ogre::Node::TS_WORLD
+            );
+        }
     }
+
+    
 
     // Terrain following
     Ogre::Vector3 currentPos = mPlayerRoot->getPosition();
@@ -163,8 +204,8 @@ void UFOController::injectKeyDown(
     const OgreBites::KeyboardEvent& evt
 )
 {
-    if (mIsDead)
-        return;
+    // Ignore all input (Movement, Hyperspeed, Abduction) if dead or time is up
+    if (mIsDead || mTimeIsUp) return;
 
     OgreBites::Keycode key = evt.keysym.sym;
 
@@ -248,9 +289,9 @@ void UFOController::injectKeyUp(
     const OgreBites::KeyboardEvent& evt
 )
 {
-    if (mIsDead)
-        return;
-
+    // Ignore key releases to prevent state bugs if time runs out while a key is held
+    if (mIsDead || mTimeIsUp) return;
+    
     OgreBites::Keycode key = evt.keysym.sym;
 
     if (key == 'w')

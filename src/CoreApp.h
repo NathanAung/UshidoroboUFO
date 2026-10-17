@@ -5,6 +5,7 @@
 #include <OgreApplicationContext.h>
 #include <OgreInput.h>
 #include <OgreRTShaderSystem.h>
+#include <OgreTrays.h>
 
 #include "UFOController.h"
 #include "SpawnManager.h"
@@ -14,6 +15,7 @@
 class CoreApp 
     : public OgreBites::ApplicationContext
     , public OgreBites::InputListener
+    , public OgreBites::TrayListener
 {
 public:
     CoreApp();
@@ -35,6 +37,10 @@ private:
     UFOController* ufoController;
     SpawnManager* spawnManager;
     ParticleManager* mParticleManager;
+
+    OgreBites::TrayManager* trayManager;
+    OgreBites::Label* healthLabel;
+    int displayedHealth;
 };
 
 #endif

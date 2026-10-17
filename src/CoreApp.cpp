@@ -5,7 +5,10 @@ CoreApp::CoreApp()
     : OgreBites::ApplicationContext("OgreTestApp"),
       ufoController(nullptr),
       spawnManager(nullptr),
-      mParticleManager(nullptr)
+      trayManager(nullptr),
+      mParticleManager(nullptr),
+      healthLabel(nullptr),
+      displayedHealth(-1)
 {
 }
 
@@ -28,6 +31,15 @@ void CoreApp::setup()
 
     Ogre::Root* root = getRoot();
     Ogre::SceneManager* scnMgr = root->createSceneManager();
+    if (trayManager) {
+        removeInputListener(trayManager);
+        delete trayManager;
+        trayManager = nullptr;
+        healthLabel = nullptr;
+    }
+
+
+    scnMgr->addRenderQueueListener(getOverlaySystem());
 
     Ogre::RTShader::ShaderGenerator* shadergen =
         Ogre::RTShader::ShaderGenerator::getSingletonPtr();
@@ -100,7 +112,6 @@ void CoreApp::setup()
 
     terrainNode->attachObject(terrainEntity);
     terrainNode->setPosition(0, -50, 0);
-
     // Player root node
     Ogre::SceneNode* playerRoot =
         scnMgr->getRootSceneNode()->createChildSceneNode("PlayerRoot");
@@ -112,13 +123,17 @@ void CoreApp::setup()
     visualNode->attachObject(ufoEntity);
     visualNode->setScale(10.0f, 10.0f, 10.0f);
 
-    // Initialize managers in the correct order
+    
+    // Initialize ParticleManager
     mParticleManager = new ParticleManager(scnMgr);
 
-    // SpawnManager MUST exist before passing it to UFOController
+    // Initialize SpawnManager
     spawnManager = new SpawnManager(scnMgr);
+
+    // Tell SpawnManager which node is the UFO
     spawnManager->setUFONode(playerRoot);
 
+    // Create UFOController ONCE
     ufoController = new UFOController(
         scnMgr,
         playerRoot,
@@ -127,10 +142,21 @@ void CoreApp::setup()
         mParticleManager
     );
 
+    // Connect SpawnManager to UFOController
     ufoController->setSpawnManager(spawnManager);
+
 
     // Spawn test cows
     spawnManager->spawnRandom(SpawnType::Cow, 50);
+
+    trayManager = new OgreBites::TrayManager("GameUI", getRenderWindow(), this);
+    trayManager -> hideCursor();
+    addInputListener(trayManager);
+    displayedHealth = ufoController->getHealth();
+    healthLabel = trayManager->createLabel(
+        OgreBites::TL_TOPLEFT, "HealthLabel",
+        "UFO HEALTH: " + std::to_string(displayedHealth), 220);
+    trayManager->showTrays();
 }
 
 bool CoreApp::keyPressed(const OgreBites::KeyboardEvent& evt)
@@ -157,17 +183,41 @@ bool CoreApp::keyReleased(const OgreBites::KeyboardEvent& evt)
     return true;
 }
 
+
+
 void CoreApp::frameRendered(const Ogre::FrameEvent& evt)
 {
     if (ufoController)
+    {
         ufoController->update(evt);
 
+        int currentHealth = ufoController->getHealth();
+
+        if (healthLabel && currentHealth != displayedHealth)
+        {
+            displayedHealth = currentHealth;
+
+            healthLabel->setCaption(
+                "UFO HEALTH: " +
+                std::to_string(displayedHealth)
+            );
+        }
+    }
+
     if (mParticleManager)
+    {
         mParticleManager->update(evt.timeSinceLastFrame);
+    }
 
     if (spawnManager)
+    {
         spawnManager->update(evt.timeSinceLastFrame);
+    }
 }
+
+
+
+
 
 bool CoreApp::mouseMoved(const OgreBites::MouseMotionEvent& evt)
 {
