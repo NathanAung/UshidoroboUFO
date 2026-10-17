@@ -4,6 +4,7 @@
 #include <Ogre.h>
 #include <OgreInput.h>
 #include <random>
+#include "ParticleManager.h"
 
 // Define query masks to differentiate entities in the game world
 enum QueryFlags {
@@ -15,7 +16,7 @@ enum QueryFlags {
 
 class UFOController {
 public:
-    UFOController(Ogre::SceneManager* scnMgr, Ogre::SceneNode* playerRoot, Ogre::SceneNode* visualNode, Ogre::Camera* camera);
+    UFOController(Ogre::SceneManager* scnMgr, Ogre::SceneNode* playerRoot, Ogre::SceneNode* visualNode, Ogre::Camera* camera, ParticleManager* particleMgr);
     ~UFOController();
 
     // Core update loop for continuous actions
@@ -33,6 +34,7 @@ public:
 
 private:
     Ogre::SceneManager* mScnMgr;
+    ParticleManager* mParticleManager;
     
     // Split node architecture
     Ogre::SceneNode* mPlayerRoot; // Translates the player and camera
@@ -46,6 +48,8 @@ private:
     int mHealth;
     float mInvulnerabilityTimer;
     float mHoverAltitude; // The distance the UFO hovers above the ground
+
+    bool mIsDead;
 
     // Movement state flags
     bool mGoingForward;

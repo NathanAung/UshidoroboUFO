@@ -1,6 +1,6 @@
 #include "CoreApp.h"
 
-CoreApp::CoreApp() : OgreBites::ApplicationContext("OgreTestApp"), ufoController(nullptr)
+CoreApp::CoreApp() : OgreBites::ApplicationContext("OgreTestApp"), ufoController(nullptr), mParticleManager(nullptr)
 {
 }
 
@@ -12,6 +12,8 @@ CoreApp::~CoreApp()
         ufoController = nullptr;
         spawnManager = nullptr;
     }
+
+    if (mParticleManager) delete mParticleManager;
 }
 
 void CoreApp::setup()
@@ -89,9 +91,11 @@ void CoreApp::setup()
     testCowNode->setScale(0.5f, 0.5f, 0.5f);
     // --------------------------
 
+    // Initialize the Particle Manager first
+    mParticleManager = new ParticleManager(scnMgr);
 
     // Initialize the controller with the split nodes and the camera
-    ufoController = new UFOController(scnMgr, playerRoot, visualNode, cam);
+    ufoController = new UFOController(scnMgr, playerRoot, visualNode, cam, mParticleManager);
 
     //Initialize the spawn manager
     spawnManager = new SpawnManager(scnMgr);
@@ -132,6 +136,10 @@ void CoreApp::frameRendered(const Ogre::FrameEvent &evt)
     // Delegate frame updates to the controller
     if (ufoController) {
         ufoController->update(evt);
+    }
+
+    if (mParticleManager) {
+        mParticleManager->update(evt.timeSinceLastFrame);
     }
 }
 
