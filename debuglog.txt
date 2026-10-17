@@ -1,0 +1,388 @@
+Creating resource group General
+Creating resource group OgreInternal
+Creating resource group OgreAutodetect
+SceneManagerFactory for type 'DefaultSceneManager' registered.
+Registering ResourceManager for type Material
+Registering ResourceManager for type Mesh
+Registering ResourceManager for type Skeleton
+MovableObjectFactory for type 'ParticleSystem' registered.
+ArchiveFactory for type 'FileSystem' registered
+ArchiveFactory for type 'Zip' registered
+ArchiveFactory for type 'EmbeddedZip' registered
+DDS codec registering
+ETC codec registering
+ASTC codec registering
+Registering ResourceManager for type GpuProgram
+Registering ResourceManager for type Compositor
+MovableObjectFactory for type 'Entity' registered.
+MovableObjectFactory for type 'Light' registered.
+MovableObjectFactory for type 'BillboardSet' registered.
+MovableObjectFactory for type 'ManualObject' registered.
+MovableObjectFactory for type 'BillboardChain' registered.
+MovableObjectFactory for type 'RibbonTrail' registered.
+MovableObjectFactory for type 'StaticGeometry' registered.
+MovableObjectFactory for type 'Rectangle2D' registered.
+Loading library C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/.\RenderSystem_Direct3D11.dll
+Installing plugin: D3D11 RenderSystem
+D3D11: Direct3D11 Rendering Subsystem created.
+D3D11: Driver Detection Starts
+D3D11: "NVIDIA GeForce GTX 1080 Ti"
+D3D11: "Microsoft Basic Render Driver (software)"
+D3D11: Driver Detection Ends
+Plugin successfully installed
+Loading library C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/.\Plugin_ParticleFX.dll
+Installing plugin: ParticleFX
+Particle Emitter Type 'Point' registered
+Particle Emitter Type 'Box' registered
+Particle Emitter Type 'Ellipsoid' registered
+Particle Emitter Type 'Cylinder' registered
+Particle Emitter Type 'Ring' registered
+Particle Emitter Type 'HollowEllipsoid' registered
+Particle Affector Type 'LinearForce' registered
+Particle Affector Type 'ColourFader' registered
+Particle Affector Type 'ColourFader2' registered
+Particle Affector Type 'ColourImage' registered
+Particle Affector Type 'ColourInterpolator' registered
+Particle Affector Type 'Scaler' registered
+Particle Affector Type 'Rotator' registered
+Particle Affector Type 'DirectionRandomiser' registered
+Particle Affector Type 'DeflectorPlane' registered
+Particle Affector Type 'TextureAnimator' registered
+Plugin successfully installed
+Loading library C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/.\Plugin_BSPSceneManager.dll
+Installing plugin: BSP Scene Manager
+Plugin successfully installed
+Loading library C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/.\Plugin_GLSLangProgramManager.dll
+Installing plugin: GLSLang Program Manager
+Plugin successfully installed
+Loading library C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/.\Codec_STBI.dll
+stb_image - v2.30 - public domain image loader
+Supported formats: jpeg,jpg,png,bmp,psd,tga,gif,pic,ppm,pgm,hdr
+Loading library C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/.\Plugin_PCZSceneManager.dll
+Installing plugin: Portal Connected Zone Scene Manager
+PCZone Factory Type 'ZoneType_Default' registered
+Plugin successfully installed
+Loading library C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/.\Plugin_OctreeZone.dll
+Installing plugin: Octree Zone Factory
+Plugin successfully installed
+Loading library C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/.\Plugin_OctreeSceneManager.dll
+Installing plugin: Octree Scene Manager
+Plugin successfully installed
+Loading library C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/.\Plugin_DotScene.dll
+Installing plugin: DotScene Loader
+Plugin successfully installed
+Loading library C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/.\Codec_Assimp.dll
+Assimp - 6.0.2298cdbd - Open-Asset-Importer
+Supported formats: 3d 3ds 3mf ac ac3d acc amf ase ask assbin b3d blend bvh cob csm dae dxf enff fbx glb gltf hmp ifc ifczip iqm irr irrmesh lwo lws lxo md2 md3 md5anim md5camera md5mesh mdl mot ms3d ndo nff obj off ogex pk3 ply pmx prj q3o q3s scn sib smd step stl stp ter uc vrm vta x x3d x3db xgl xml zae zgl
+
+*-*-* OGRE Initialising
+*-*-* Version 14.5.2 (Tsathoggua)
+OverlayElementFactory for type Panel registered.
+OverlayElementFactory for type BorderPanel registered.
+OverlayElementFactory for type TextArea registered.
+Registering ResourceManager for type Font
+D3D11: RenderSystem Option: Allow NVPerfHUD = No
+D3D11: RenderSystem Option: Debug Layer = Off
+D3D11: RenderSystem Option: Driver type = Hardware
+D3D11: RenderSystem Option: FSAA = 1
+D3D11: RenderSystem Option: Full Screen = No
+D3D11: RenderSystem Option: Information Queue Exceptions Bottom Level = No information queue exceptions
+D3D11: RenderSystem Option: Max Requested Feature Levels = 11.0
+D3D11: RenderSystem Option: Min Requested Feature Levels = 9.1
+D3D11: RenderSystem Option: Rendering Device = (default)
+D3D11: RenderSystem Option: Reversed Z-Buffer = No
+D3D11: RenderSystem Option: VSync = Yes
+D3D11: RenderSystem Option: VSync Interval = 1
+D3D11: RenderSystem Option: Video Mode = 800 x 600 @ 32-bit colour
+D3D11: RenderSystem Option: sRGB Gamma Conversion = No
+CPU Identifier & Features
+-------------------------
+ *   CPU ID: GenuineIntel: Intel(R) Core(TM) i7-9700K CPU @ 3.60GHz
+ *          SSE: yes
+ *         SSE2: yes
+ *         SSE3: yes
+ *        SSE41: yes
+ *        SSE42: yes
+ *          MMX: yes
+ *       MMXEXT: yes
+ *        3DNOW: no
+ *     3DNOWEXT: no
+ *         CMOV: yes
+ *          TSC: yes
+ *INVARIANT TSC: yes
+ *          FPU: yes
+ *          PRO: yes
+ *           HT: no
+-------------------------
+D3D11: Subsystem Initialising
+D3D11: Driver Detection Starts
+D3D11: "NVIDIA GeForce GTX 1080 Ti"
+D3D11: "Microsoft Basic Render Driver (software)"
+D3D11: Driver Detection Ends
+D3D11: Requested "(default)", selected "NVIDIA GeForce GTX 1080 Ti"
+D3D11: Device Feature Level 11.0
+***************************************
+*** D3D11: Subsystem Initialized OK ***
+***************************************
+RenderSystem::_createRenderWindow "OgreTestApp", 800x600 windowed  miscParams: FSAA=1 colourDepth=32 externalWindowHandle=3410538 gamma=No monitorIndex=(default) sdlwin=1960270011136 vsync=Yes vsyncInterval=1 
+D3D11: Created D3D11 Rendering Window 'OgreTestApp' : 800x600
+Registering ResourceManager for type Texture
+RenderSystem capabilities
+-------------------------
+RenderSystem Name: Direct3D11 Rendering Subsystem
+GPU Vendor: nvidia
+Device Name: NVIDIA GeForce GTX 1080 Ti
+Driver Version: 32.0.15.6636
+ * Fixed function pipeline: no
+ * 32-bit index buffers: yes
+ * Hardware stencil buffer: yes
+   - Two sided stencil support: yes
+   - Wrap stencil values: yes
+ * Gpu programs: yes
+   - Vertex constant 4-vectors: 4096
+   - Fragment constant 4-vectors: 4096
+ * Geometry programs: yes
+   - Number of constant 4-vectors: 4096
+ * Tessellation programs: yes
+   - Hull program constant 4-vectors: 4096
+   - Domain program constant 4-vectors: 4096
+ * Mesh programs: no
+ * Compute programs: yes
+   - Number of constant 4-vectors: 4096
+ * VP/RT index from any shader: yes
+ * Supported Shader Profiles: cs_4_0 cs_4_1 cs_5_0 ds_5_0 gs_4_0 gs_4_1 gs_5_0 hlsl hs_5_0 ps_2_0 ps_2_a ps_2_b ps_3_0 ps_4_0 ps_4_0_level_9_1 ps_4_0_level_9_3 ps_4_1 ps_5_0 vs_2_0 vs_2_a vs_3_0 vs_4_0 vs_4_0_level_9_1 vs_4_0_level_9_3 vs_4_1 vs_5_0
+ * Read-back compiled shader: yes
+ * Number of vertex attributes: 32
+ * Textures
+   - Number of texture units: 16
+   - Number of vertex textures: 4
+   - Floating point: yes
+   - Non-power-of-two: yes
+   - 1D textures: yes
+   - 2D array textures: yes
+   - 3D textures: yes
+   - Anisotropic filtering: yes
+ * Texture Compression: yes
+   - DXT: yes
+   - VTC: no
+   - PVRTC: no
+   - ATC: no
+   - ETC1: no
+   - ETC2: no
+   - BC4/BC5: no
+   - BC6H/BC7: yes
+   - ASTC: no
+   - Automatic mipmap generation: no
+ * Vertex Buffers
+   - Render to Vertex Buffer: yes
+   - Instance Data: yes
+   - Primitive Restart: yes
+   - INT_10_10_10_2_NORM element type: no
+   - 16x3 element types: no
+ * Read/Write Buffers: no
+ * Hardware Occlusion Query: yes
+ * User clip planes: yes
+ * Depth clamping: yes
+ * Hardware render-to-texture: yes
+   - Multiple Render Targets: 8
+ * Point Sprites: no
+ * Wide Lines: no
+ * Hardware Gamma: no
+DefaultWorkQueue('Root') initialising on thread 22868.
+Particle Renderer Type 'billboard' registered
+DefaultWorkQueue('Root')::WorkerFunc - thread 6976 starting.
+DefaultWorkQueue('Root')::WorkerFunc - thread 3352 starting.
+SceneManagerFactory for type 'BspSceneManager' registered.
+SceneManagerFactory for type 'PCZSceneManager' registered.
+MovableObjectFactory for type 'PCZLight' registered.
+MovableObjectFactory for type 'Portal' registered.
+MovableObjectFactory for type 'AntiPortal' registered.
+PCZone Factory Type 'ZoneType_Octree' registered
+SceneManagerFactory for type 'OctreeSceneManager' registered.
+Parsing 'C:\Users\MiniPC\Documents\GitHub\UshidoroboUFO\bin\Release\resources.cfg'
+Creating resource group BSPWorld
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/packs/oa_rpg3dm2.pk3' of type 'Zip' to resource group 'BSPWorld'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/packs/ogretestmap.zip' of type 'Zip' to resource group 'BSPWorld'
+Creating resource group Essential
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/thumbnails' of type 'FileSystem' to resource group 'Essential'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/packs/SdkTrays.zip' of type 'Zip' to resource group 'Essential'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/packs/profiler.zip' of type 'Zip' to resource group 'Essential'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/PBR' of type 'FileSystem' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/PBR/filament' of type 'FileSystem' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/materials/programs/GLSL' of type 'FileSystem' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/materials/programs/GLSL120' of type 'FileSystem' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/materials/programs/GLSL150' of type 'FileSystem' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/materials/programs/GLSL400' of type 'FileSystem' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/materials/programs/GLSLES' of type 'FileSystem' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/materials/programs/SPIRV' of type 'FileSystem' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/materials/programs/Cg' of type 'FileSystem' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/materials/programs/HLSL' of type 'FileSystem' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/materials/programs/HLSL_Cg' of type 'FileSystem' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/materials/scripts' of type 'FileSystem' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/materials/textures' of type 'FileSystem' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/materials/textures/terrain' of type 'FileSystem' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/models' of type 'FileSystem' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/particle' of type 'FileSystem' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/DeferredShadingMedia' of type 'FileSystem' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/DeferredShadingMedia/DeferredShading/post' of type 'FileSystem' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/PCZAppMedia' of type 'FileSystem' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/materials/scripts/SSAO' of type 'FileSystem' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/materials/textures/SSAO' of type 'FileSystem' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/volumeTerrain' of type 'FileSystem' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/CSMShadows' of type 'FileSystem' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/packs/cubemap.zip' of type 'Zip' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/packs/cubemapsJS.zip' of type 'Zip' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/packs/dragon.zip' of type 'Zip' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/packs/fresneldemo.zip' of type 'Zip' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/packs/ogredance.zip' of type 'Zip' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/packs/Sinbad.zip' of type 'Zip' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/packs/skybox.zip' of type 'Zip' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/volumeTerrain/volumeTerrainBig.zip' of type 'Zip' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/packs/DamagedHelmet.zip' of type 'Zip' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/packs/filament_shaders.zip' of type 'Zip' to resource group 'General'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/Main' of type 'FileSystem' to resource group 'OgreInternal'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/RTShaderLib' of type 'FileSystem' to resource group 'OgreInternal'
+Added resource location 'C:/Users/MiniPC/Documents/GitHub/UshidoroboUFO/bin/Release/../../Media/Terrain/' of type 'FileSystem' to resource group 'OgreInternal'
+Parsing scripts for resource group BSPWorld
+Parsing script scripts/clown.shader
+Parsing script scripts/liquid_water.shader
+Parsing script scripts/oalite.shader
+Parsing script scripts/oanew.shader
+Parsing script scripts/oasky.shader
+Finished parsing scripts for resource group BSPWorld
+Creating resources for group BSPWorld
+All done
+Parsing scripts for resource group Essential
+Parsing script SdkTrays.material
+Parsing script OgreProfiler.material
+Parsing script SdkTrays.fontdef
+Parsing script SdkTrays.overlay
+Texture 'sdk_cursor.png': Loading 1 faces(PF_A8B8G8R8,32x32x1) with 5 generated mipmaps from Image. Internal format is PF_A8B8G8R8,32x32x1.
+Texture 'sdk_tray.png': Loading 1 faces(PF_A8B8G8R8,64x64x1) with 6 generated mipmaps from Image. Internal format is PF_A8B8G8R8,64x64x1.
+Texture 'sdk_button_up.png': Loading 1 faces(PF_A8B8G8R8,128x32x1) with 7 generated mipmaps from Image. Internal format is PF_A8B8G8R8,128x32x1.
+Texture 'sdk_text_box.png': Loading 1 faces(PF_A8B8G8R8,32x32x1) with 5 generated mipmaps from Image. Internal format is PF_A8B8G8R8,32x32x1.
+Texture 'sdk_mini_tray.png': Loading 1 faces(PF_A8B8G8R8,32x32x1) with 5 generated mipmaps from Image. Internal format is PF_A8B8G8R8,32x32x1.
+Texture 'sdk_track.png': Loading 1 faces(PF_A8B8G8R8,16x32x1) with 5 generated mipmaps from Image. Internal format is PF_A8B8G8R8,16x32x1.
+Texture 'sdk_handle.png': Loading 1 faces(PF_A8B8G8R8,16x16x1) with 4 generated mipmaps from Image. Internal format is PF_A8B8G8R8,16x16x1.
+Texture 'sdk_mini_text_box.png': Loading 1 faces(PF_A8B8G8R8,32x32x1) with 5 generated mipmaps from Image. Internal format is PF_A8B8G8R8,32x32x1.
+Texture 'sdk_label.png': Loading 1 faces(PF_A8B8G8R8,32x32x1) with 5 generated mipmaps from Image. Internal format is PF_A8B8G8R8,32x32x1.
+Texture 'sdk_separator.png': Loading 1 faces(PF_A8B8G8R8,64x16x1) with 6 generated mipmaps from Image. Internal format is PF_A8B8G8R8,64x16x1.
+Texture 'sdk_logo.png': Loading 1 faces(PF_A8B8G8R8,128x64x1) with 7 generated mipmaps from Image. Internal format is PF_A8B8G8R8,128x64x1.
+Texture 'sdk_shade.png': Loading 1 faces(PF_A8B8G8R8,64x48x1) with 6 generated mipmaps from Image. Internal format is PF_A8B8G8R8,64x48x1.
+Texture 'sdk_frame.png': Loading 1 faces(PF_A8B8G8R8,32x32x1) with 5 generated mipmaps from Image. Internal format is PF_A8B8G8R8,32x32x1.
+Texture 'sdk_mini_text_box_over.png': Loading 1 faces(PF_A8B8G8R8,32x32x1) with 5 generated mipmaps from Image. Internal format is PF_A8B8G8R8,32x32x1.
+Texture 'sdk_pulse.png': Loading 1 faces(PF_B8G8R8,8x1x1) with 3 generated mipmaps from Image. Internal format is PF_A8B8G8R8,8x1x1.
+Finished parsing scripts for resource group Essential
+Creating resources for group Essential
+All done
+Parsing scripts for resource group General
+Parsing script pbr.program
+Parsing script pbr_filament.program
+Parsing script Examples.program
+Parsing script Instancing.program
+Parsing script StdQuad_vp.program
+Parsing script deferred_post.program
+Parsing script ShadowCaster.program
+Parsing script glTF2_PBR.material
+Parsing script filament.material
+Parsing script AdaptivePNTrianglesTessellation.material
+Parsing script AdvancedGLSL.material
+Parsing script ASCII.material
+Parsing script BlackAndWhite.material
+Parsing script Bloom2.material
+Parsing script Compute.material
+Parsing script DamagedHelmet.material
+Parsing script DepthShadowmap.material
+Parsing script Dither.material
+Parsing script DOF.material
+Parsing script Embossed.material
+Parsing script Examples-Advanced.material
+Parsing script Examples-DynTex.material
+Parsing script Examples-Water.material
+Parsing script Examples.material
+Parsing script facial.material
+Parsing script FluidSim.material
+Parsing script gaussiansplat.material
+Parsing script Glass.material
+Parsing script Hair.material
+Parsing script Halftone.material
+Parsing script HardwareSkinningShadow.material
+Parsing script hdr.material
+Parsing script HeatVision.material
+Parsing script HWInstancing.material
+Parsing script HW_VTFInstancing.material
+Parsing script HW_VTF_LUTInstancing.material
+Parsing script Invert.material
+Parsing script Island.material
+Parsing script IsoSurf.material
+Parsing script Laplace.material
+Parsing script LigthShafts.material
+Parsing script MotionBlur.material
+Parsing script NightVision.material
+Parsing script Ocean.material
+Parsing script OffsetMapping.material
+Parsing script Ogre.material
+Parsing script OldMovie.material
+Parsing script OldTV.material
+Parsing script ParticleGS.material
+Parsing script Posterize.material
+Parsing script pssm.material
+Parsing script RadialBlur.material
+Parsing script RTShaderSystem.material
+Parsing script ShaderInstancing.material
+Parsing script SharpenEdges.material
+Parsing script ShowVertexAttributes.material
+Parsing script sibenik.material
+Parsing script skybox.material
+Parsing script smoke.material
+Parsing script TerrainTessellation.material
+Parsing script Tessellation.material
+Parsing script Tiling.material
+Parsing script ufo.material
+Parsing script VTFInstancing.material
+Parsing script WBOIT.material
+Parsing script deferreddemo.material
+Parsing script deferred_post.material
+Parsing script deferred_post_minilight.material
+Parsing script ShadowCaster.material
+Parsing script ssao.material
+Parsing script ROOM.material
+Parsing script CreaseShading.material
+Parsing script Crytek.material
+Parsing script GBuffer.material
+Parsing script HemisphereMC.material
+Parsing script HorizonBased.material
+Parsing script Modulate.material
+Parsing script ShowDepth.material
+Parsing script ShowNormals.material
+Parsing script ShowViewPos.material
+Parsing script SSAOPost.material
+Parsing script UnsharpMask.material
+Parsing script Volumetric.material
+Parsing script triplanarReference.material
+Parsing script CSMShadows.material
+Parsing script RomanBath.material
+Parsing script Sinbad.material
+Parsing script emitted_emitter.particle
+Parsing script Examples-Water.particle
+Parsing script Examples.particle
+Parsing script smoke.particle
+Parsing script Examples.compositor
+Parsing script deferred.compositor
+Parsing script ssao.compositor
+Parsing script SSAO.compositor
+Parsing script SSAOPost.compositor
+Finished parsing scripts for resource group General
+Creating resources for group General
+All done
+Parsing scripts for resource group OgreAutodetect
+Finished parsing scripts for resource group OgreAutodetect
+Creating resources for group OgreAutodetect
+All done
+Parsing scripts for resource group OgreInternal
+Parsing script ShadowVolumeExtude.program
+Parsing script Shadow.material
+Parsing script RTSSamplers.material
+Finished parsing scripts for resource group OgreInternal
+Creating resources for group OgreInternal
+All done
