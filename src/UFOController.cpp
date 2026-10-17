@@ -3,7 +3,7 @@
 
 UFOController::UFOController(Ogre::SceneManager* scnMgr, Ogre::SceneNode* playerRoot, Ogre::SceneNode* visualNode, Ogre::Camera* camera, ParticleManager* particleMgr)
     : mScnMgr(scnMgr), mPlayerRoot(playerRoot), mVisualNode(visualNode), mParticleManager(particleMgr),
-      mCowsAbducted(0), mHealth(5), mInvulnerabilityTimer(0.0f), mHoverAltitude(30.0f),
+      mCowsAbducted(0), mHealth(5), mIsDead(false), mInvulnerabilityTimer(0.0f), mHoverAltitude(30.0f),
       mGoingForward(false), mGoingBack(false), mGoingLeft(false), mGoingRight(false),
       mBaseSpeed(100.0f), mCurrentSpeed(100.0f) // Adjust this value to match the game's scale
 {
@@ -49,26 +49,37 @@ float UFOController::getTerrainHeight(float x, float z) const
     return 0.0f; 
 }
 
+
 void UFOController::takeDamage(int amount)
 {
-    // Ignore damage if already dead or currently invulnerable
-    if (mHealth <= 0 || mInvulnerabilityTimer > 0.0f) return;
+    // Ignore damage if already dead or invulnerable
+    if (mIsDead || mInvulnerabilityTimer > 0.0f) return;
 
     mHealth -= amount;
-
-    if (mParticleManager) {
-        mParticleManager->spawnExplosion(mPlayerRoot->getPosition());
-    }
-    
-    // Set 1.5 seconds of invulnerability (i-frames) to prevent instant death from overlapping hitboxes
     mInvulnerabilityTimer = 1.5f; 
-
-    Ogre::LogManager::getSingleton().logMessage("UFO Hit! HP remaining: " + std::to_string(mHealth));
 
     if (mHealth <= 0)
     {
+        mIsDead = true;
+        
+        // Hide the UFO 3D model
+        mVisualNode->setVisible(false);
+        
+        // Trigger the large death explosion (lasts 1.5 seconds)
+        if (mParticleManager) {
+            mParticleManager->spawnExplosion(mPlayerRoot->getPosition(), "UFO/Explosion", 1.5f);
+        }
+
         Ogre::LogManager::getSingleton().logMessage("GAME OVER: UFO Destroyed!");
-        // will hook into this state later to display the Game Over UI screen
+    }
+    else
+    {
+        // Trigger the small damage explosion (lasts 0.5 seconds)
+        if (mParticleManager) {
+            mParticleManager->spawnExplosion(mPlayerRoot->getPosition(), "UFO/SmallExplosion", 0.5f);
+        }
+
+        Ogre::LogManager::getSingleton().logMessage("UFO Hit! HP remaining: " + std::to_string(mHealth));
     }
 }
 
@@ -76,6 +87,9 @@ void UFOController::takeDamage(int amount)
 void UFOController::update(const Ogre::FrameEvent& evt)
 {
     if (!mPlayerRoot || !mVisualNode) return;
+
+    // If dead, bypass all movement, terrain following, and spinning logic
+    if (mIsDead) return; 
 
     // Decrease the invulnerability timer
     if (mInvulnerabilityTimer > 0.0f) {
@@ -116,6 +130,8 @@ void UFOController::update(const Ogre::FrameEvent& evt)
 
 void UFOController::injectKeyDown(const OgreBites::KeyboardEvent& evt)
 {
+    if (mIsDead) return;
+
     OgreBites::Keycode key = evt.keysym.sym;
 
     if (key == 'w') mGoingForward = true;
@@ -177,6 +193,8 @@ void UFOController::injectKeyDown(const OgreBites::KeyboardEvent& evt)
 
 void UFOController::injectKeyUp(const OgreBites::KeyboardEvent& evt)
 {
+    if (mIsDead) return;
+    
     OgreBites::Keycode key = evt.keysym.sym;
 
     if (key == 'w') mGoingForward = false;

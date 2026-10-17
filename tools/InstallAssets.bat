@@ -5,6 +5,7 @@ cd /d "%~dp0..\assets"
 set modelsFolder="%~dp0..\Media\models"
 set materialFolder="%~dp0..\Media\materials\scripts"
 set textureFolder="%~dp0..\Media\materials\textures"
+set particleFolder="%~dp0..\Media\particle"
 
 echo Importing assets into OGRE media...
 
@@ -22,6 +23,9 @@ for %%f in (*) do (
     )
     if /i "%%~xf"==".jpg" (
         copy %%f %textureFolder%
+    )
+	if /i "%%~xf"==".particle" (
+        copy %%f %particleFolder%
     )
 )
 

@@ -16,21 +16,23 @@ ParticleManager::~ParticleManager()
     mActiveParticles.clear();
 }
 
-void ParticleManager::spawnExplosion(const Ogre::Vector3& position)
+
+void ParticleManager::spawnExplosion(const Ogre::Vector3& position, const std::string& templateName, float lifespan)
 {
     std::string sysName = "Explosion_" + std::to_string(mExplosionCounter++);
     
-    // Create the particle system using the script template
-    Ogre::ParticleSystem* explosion = mScnMgr->createParticleSystem(sysName, "UFO/Explosion");
+    // Use the passed templateName to create the particle
+    Ogre::ParticleSystem* explosion = mScnMgr->createParticleSystem(sysName, templateName);
     
     // Create a standalone node and attach the particle system
     Ogre::SceneNode* explosionNode = mScnMgr->getRootSceneNode()->createChildSceneNode();
     explosionNode->setPosition(position);
     explosionNode->attachObject(explosion);
     
-    // Push it to the tracking vector with a 0.5-second lifespan (matching the .particle script)
-    mActiveParticles.push_back({explosion, explosionNode, 0.5f});
+    // Push it to the tracking vector with a dynamic lifespan
+    mActiveParticles.push_back({explosion, explosionNode, lifespan});
 }
+
 
 void ParticleManager::update(float deltaTime)
 {

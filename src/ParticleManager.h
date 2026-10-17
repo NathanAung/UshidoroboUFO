@@ -18,7 +18,7 @@ public:
     ~ParticleManager();
 
     // Spawns the explosion at the given location
-    void spawnExplosion(const Ogre::Vector3& position);
+    void spawnExplosion(const Ogre::Vector3& position, const std::string& templateName, float lifespan);
     
     // Core update loop to prune expired particles
     void update(float deltaTime);

@@ -49,6 +49,8 @@ private:
     float mInvulnerabilityTimer;
     float mHoverAltitude; // The distance the UFO hovers above the ground
 
+    bool mIsDead;
+
     // Movement state flags
     bool mGoingForward;
     bool mGoingBack;
