@@ -172,6 +172,38 @@ std::vector<std::vector<float>> TerrainController::generateNoiseMap(
         }
     }
 
+    // Falloff Section
+    float edgeThresholdX = mapWidth * 0.15f;
+    float edgeThresholdY = mapHeight * 0.15f;
+
+    for (int y = 0; y < mapHeight; ++y)
+    {
+        for (int x = 0; x < mapWidth; ++x)
+        {
+            // Calculate distance to the nearest edge
+            float distX = static_cast<float>(std::min(x, mapWidth - 1 - x));
+            float distY = static_cast<float>(std::min(y, mapHeight - 1 - y));
+
+            // Normalize distance within the threshold zone (0.0 at edge, 1.0 inside the safe zone)
+            float factorX = distX / edgeThresholdX;
+            float factorY = distY / edgeThresholdY;
+
+            // Clamp factors between 0 and 1
+            factorX = Noise::clamp(factorX, 0.0f, 1.0f);
+            factorY = Noise::clamp(factorY, 0.0f, 1.0f);
+
+            // Smoothstep curve for a natural, non-linear fade (cubic smooth)
+            factorX = factorX * factorX * (3.0f - 2.0f * factorX);
+            factorY = factorY * factorY * (3.0f - 2.0f * factorY);
+
+            // Combine X and Y falloff weights
+            float falloffWeight = factorX * factorY;
+
+            // Apply falloff to the height map
+            noiseMap[x][y] *= falloffWeight;
+        }
+    }
+
     return noiseMap;
 }
 

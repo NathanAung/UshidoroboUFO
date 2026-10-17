@@ -1,19 +1,21 @@
 #include "CoreApp.h"
 
-CoreApp::CoreApp() : OgreBites::ApplicationContext("OgreTestApp"), ufoController(nullptr),trayManager(nullptr),  mParticleManager(nullptr), healthLabel(nullptr), displayedHealth(-1)
+CoreApp::CoreApp() : OgreBites::ApplicationContext("OgreTestApp"), ufoController(nullptr), trayManager(nullptr), mParticleManager(nullptr), healthLabel(nullptr), displayedHealth(-1)
 {
 }
 
 CoreApp::~CoreApp()
 {
     // Clean up the dynamically allocated controller
-    if (ufoController) {
+    if (ufoController)
+    {
         delete ufoController;
         ufoController = nullptr;
         spawnManager = nullptr;
     }
 
-    if (mParticleManager) delete mParticleManager;
+    if (mParticleManager)
+        delete mParticleManager;
 }
 
 void CoreApp::setup()
@@ -21,7 +23,8 @@ void CoreApp::setup()
     OgreBites::ApplicationContext::setup();
     addInputListener(this);
 
-    if (trayManager) {
+    if (trayManager)
+    {
         removeInputListener(trayManager);
         delete trayManager;
         trayManager = nullptr;
@@ -40,7 +43,7 @@ void CoreApp::setup()
     cam->setNearClipDistance(5);
     cam->setAutoAspectRatio(true);
 
-    Ogre::Viewport* viewport = getRenderWindow()->addViewport(cam);
+    Ogre::Viewport *viewport = getRenderWindow()->addViewport(cam);
     viewport->setBackgroundColour(Ogre::ColourValue(0.08f, 0.15f, 0.26f));
 
     // Sunset directional light
@@ -54,7 +57,7 @@ void CoreApp::setup()
     scnMgr->setAmbientLight(Ogre::ColourValue(0.22f, 0.18f, 0.26f));
 
     Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-    "../Media", "FileSystem", "General");
+        "../Media", "FileSystem", "General");
     Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
     scnMgr->setSkyDome(true, "Examples/CloudySky", 5, 8, 500, true);
     scnMgr->setFog(Ogre::FOG_LINEAR, Ogre::ColourValue(0.08f, 0.15f, 0.26f), 0.0f, 220.0f, 620.0f);
@@ -65,37 +68,73 @@ void CoreApp::setup()
 
     // Generate Terrain Mesh
     TerrainController terrainController;
-    Ogre::Entity *terrainEntity = terrainController.GenerateTerrainMesh(scnMgr, 1000, 1000, 1.0f);
-    
-    Ogre::SceneNode *terrainNode = scnMgr->getRootSceneNode()->createChildSceneNode("TerrainNode");
-    terrainNode->attachObject(terrainEntity);
-    terrainNode->setPosition(0, -50, 0); // Adjust the Y position to lower the terrain
+    int width = 1000;
+    int depth = 1000;
+    float scale = 1.0f;
+
+    Ogre::Entity *baseEntity = terrainController.GenerateTerrainMesh(scnMgr, width, depth, scale);
+
+    // Calculate the exact physical size of one chunk
+    float physicalWidth = (width - 1) * scale;
+    float physicalDepth = (depth - 1) * scale;
+
+    for (int xGrid = -1; xGrid <= 1; ++xGrid)
+    {
+        for (int zGrid = -1; zGrid <= 1; ++zGrid)
+        {
+            // Create unique names for each chunk's entity and node
+            std::string nodeName = "TerrainNode_" + std::to_string(xGrid) + "_" + std::to_string(zGrid);
+            std::string entityName = "TerrainEntity_" + std::to_string(xGrid) + "_" + std::to_string(zGrid);
+
+            Ogre::Entity *terrainEntity;
+
+            // Reuse the already created mesh for the neighbors to save memory
+            if (xGrid == 0 && zGrid == 0)
+            {
+                terrainEntity = baseEntity;
+            }
+            else
+            {
+                terrainEntity = scnMgr->createEntity(entityName, "TerrainMesh");
+            }
+
+            // Create the scene node and attach the entity
+            terrainEntity->setQueryFlags(ENVIRONMENT_MASK);
+            Ogre::SceneNode *terrainNode = scnMgr->getRootSceneNode()->createChildSceneNode(nodeName);
+            terrainNode->attachObject(terrainEntity);
+
+            // Position each chunk based on its grid coordinate offset (1000 units wide/deep)
+            float worldX = (xGrid * physicalWidth - (width / 2.0f));
+            float worldZ = (zGrid * physicalWidth - (depth / 2.0f));
+
+            terrainNode->setPosition(worldX, -50.0f, worldZ);
+        }
+    }
 
     ufoEntity->setQueryFlags(PLAYER_MASK);
-    
-    // 1. Create the base translation node (Root)
-    Ogre::SceneNode* playerRoot = scnMgr->getRootSceneNode()->createChildSceneNode("PlayerRoot");
-    
-    // 2. Create the visual node for the spinning animation (Child of Root)
-    Ogre::SceneNode* visualNode = playerRoot->createChildSceneNode("UFOVisuals");
-    visualNode->attachObject(ufoEntity);
-    
-    // Apply scaling to the visual node
-    visualNode->setScale(10.0f, 10.0f, 10.0f); 
 
+    // 1. Create the base translation node (Root)
+    Ogre::SceneNode *playerRoot = scnMgr->getRootSceneNode()->createChildSceneNode("PlayerRoot");
+
+    // 2. Create the visual node for the spinning animation (Child of Root)
+    Ogre::SceneNode *visualNode = playerRoot->createChildSceneNode("UFOVisuals");
+    visualNode->attachObject(ufoEntity);
+
+    // Apply scaling to the visual node
+    visualNode->setScale(10.0f, 10.0f, 10.0f);
 
     // --- TEMPORARY TEST COW ---
-    // Using the ogrehead as a placeholder for the cow 
-    Ogre::Entity* testCow = scnMgr->createEntity("TestCow", "ogrehead.mesh");
-    
+    // Using the ogrehead as a placeholder for the cow
+    Ogre::Entity *testCow = scnMgr->createEntity("TestCow", "ogrehead.mesh");
+
     // Apply the cow mask so the tractor beam raycast can detect it
-    testCow->setQueryFlags(COW_MASK); 
-    
-    Ogre::SceneNode* testCowNode = scnMgr->getRootSceneNode()->createChildSceneNode("TestCowNode");
+    testCow->setQueryFlags(COW_MASK);
+
+    Ogre::SceneNode *testCowNode = scnMgr->getRootSceneNode()->createChildSceneNode("TestCowNode");
     testCowNode->attachObject(testCow);
-    
+
     // Position it slightly in front of and below the UFO starting position
-    testCowNode->setPosition(0, -50, -50); 
+    testCowNode->setPosition(0, -50, -50);
     testCowNode->setScale(0.5f, 0.5f, 0.5f);
     // --------------------------
 
@@ -105,16 +144,14 @@ void CoreApp::setup()
     // Initialize the controller with the split nodes and the camera
     ufoController = new UFOController(scnMgr, playerRoot, visualNode, cam, mParticleManager);
 
-    
-
-    //Initialize the spawn manager
+    // Initialize the spawn manager
     spawnManager = new SpawnManager(scnMgr);
 
-    //Spawn some test objects
+    // Spawn some test objects
     spawnManager->spawnRandom(SpawnType::Cow, 50);
 
     trayManager = new OgreBites::TrayManager("GameUI", getRenderWindow(), this);
-    trayManager -> hideCursor();
+    trayManager->hideCursor();
     addInputListener(trayManager);
     displayedHealth = ufoController->getHealth();
     healthLabel = trayManager->createLabel(
@@ -135,7 +172,8 @@ bool CoreApp::keyPressed(const OgreBites::KeyboardEvent &evt)
     }
 
     // Delegate player input to the controller
-    if (ufoController) {
+    if (ufoController)
+    {
         ufoController->injectKeyDown(evt);
     }
 
@@ -144,7 +182,8 @@ bool CoreApp::keyPressed(const OgreBites::KeyboardEvent &evt)
 
 bool CoreApp::keyReleased(const OgreBites::KeyboardEvent &evt)
 {
-    if (ufoController) {
+    if (ufoController)
+    {
         ufoController->injectKeyUp(evt);
     }
     return true;
@@ -153,17 +192,20 @@ bool CoreApp::keyReleased(const OgreBites::KeyboardEvent &evt)
 void CoreApp::frameRendered(const Ogre::FrameEvent &evt)
 {
     // Delegate frame updates to the controller
-    if (ufoController) {
+    if (ufoController)
+    {
         ufoController->update(evt);
 
-         int currentHealth = ufoController->getHealth();
-        if (healthLabel && currentHealth != displayedHealth) {
+        int currentHealth = ufoController->getHealth();
+        if (healthLabel && currentHealth != displayedHealth)
+        {
             displayedHealth = currentHealth;
             healthLabel->setCaption("UFO HEALTH: " + std::to_string(displayedHealth));
         }
     }
 
-    if (mParticleManager) {
+    if (mParticleManager)
+    {
         mParticleManager->update(evt.timeSinceLastFrame);
     }
 }
