@@ -148,6 +148,7 @@ void CoreApp::setup()
 
     // Spawn test cows
     spawnManager->spawnRandom(SpawnType::Cow, 50);
+    spawnManager->spawnRandom(SpawnType::Tank, 50);
 
     trayManager = new OgreBites::TrayManager("GameUI", getRenderWindow(), this);
     trayManager -> hideCursor();

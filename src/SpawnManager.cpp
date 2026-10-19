@@ -51,8 +51,8 @@ SpawnManager::SpawnConfig SpawnManager::getSpawnConfig(
 
     case SpawnType::Tank:
         return {
-            "ogrehead.mesh",
-            Ogre::Vector3(1.0f, 1.0f, 1.0f)
+            "cartoon_tank.mesh",
+            Ogre::Vector3(5.0f, 5.0f, 5.0f)
         };
 
     case SpawnType::Helicopter:
