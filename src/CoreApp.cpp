@@ -170,13 +170,15 @@ void CoreApp::setup()
     // Initialize the Particle Manager first
     mParticleManager = new ParticleManager(scnMgr);
 
-    spawnManager->setUFONode(playerRoot);
-
     // Initialize the controller with the split nodes and the camera
     ufoController = new UFOController(scnMgr, playerRoot, visualNode, cam, mParticleManager);
 
     // Initialize the spawn manager
-    spawnManager = new SpawnManager(spawnManager);
+    spawnManager = new SpawnManager(scnMgr);
+    
+    spawnManager->setUFONode(playerRoot);
+
+    ufoController->setSpawnManager(spawnManager);
 
     // Spawn some test objects
     spawnManager->spawnRandom(SpawnType::Cow, 50);
