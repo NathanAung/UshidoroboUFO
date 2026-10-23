@@ -1,6 +1,19 @@
 
 #include "CoreApp.h"
 
+#include <cmath>
+
+namespace
+{
+std::string formatTimer(int totalSeconds)
+{
+    int minutes = totalSeconds / 60;
+    int seconds = totalSeconds % 60;
+    return (minutes < 10 ? "0" : "") + std::to_string(minutes) + ":" +
+        (seconds < 10 ? "0" : "") + std::to_string(seconds);
+}
+}
+
 CoreApp::CoreApp()
     : OgreBites::ApplicationContext("OgreTestApp"),
       ufoController(nullptr),
@@ -9,12 +22,37 @@ CoreApp::CoreApp()
       mAudioManager(nullptr),
       mParticleManager(nullptr),
       healthLabel(nullptr),
-      displayedHealth(-1)
+      cowsLabel(nullptr),
+      timerLabel(nullptr),
+      displayedHealth(-1),
+      displayedCows(-1),
+      displayedTimerSeconds(-1)
 {
 }
 
 CoreApp::~CoreApp()
 {
+    releaseOwnedObjects();
+}
+
+void CoreApp::shutdown()
+{
+    releaseOwnedObjects();
+    OgreBites::ApplicationContext::shutdown();
+}
+
+void CoreApp::releaseOwnedObjects()
+{
+    if (trayManager)
+    {
+        removeInputListener(trayManager);
+        delete trayManager;
+        trayManager = nullptr;
+    }
+    healthLabel = nullptr;
+    cowsLabel = nullptr;
+    timerLabel = nullptr;
+
     delete ufoController;
     ufoController = nullptr;
 
@@ -23,6 +61,9 @@ CoreApp::~CoreApp()
 
     delete mParticleManager;
     mParticleManager = nullptr;
+
+    delete mAudioManager;
+    mAudioManager = nullptr;
 }
 
 void CoreApp::setup()
@@ -37,6 +78,8 @@ void CoreApp::setup()
         delete trayManager;
         trayManager = nullptr;
         healthLabel = nullptr;
+        cowsLabel = nullptr;
+        timerLabel = nullptr;
     }
 
 
@@ -79,8 +122,22 @@ void CoreApp::setup()
     Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
         "../Media", "FileSystem", "General"
     );
+    Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+        "../../assets", "FileSystem", "General"
+    );
 
     Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+
+    Ogre::ResourceGroupManager& resourceGroups =
+        Ogre::ResourceGroupManager::getSingleton();
+    Ogre::MaterialManager& materialManager =
+        Ogre::MaterialManager::getSingleton();
+    Ogre::DataStreamPtr cowMaterials =
+        resourceGroups.openResource("cow.material", "General");
+    materialManager.parseScript(cowMaterials, "General");
+    Ogre::DataStreamPtr tankMaterials =
+        resourceGroups.openResource("cartoon_tank.material", "General");
+    materialManager.parseScript(tankMaterials, "General");
 
     scnMgr->setSkyDome(true, "Examples/CloudySky", 5, 8, 500, true);
 
@@ -203,9 +260,19 @@ void CoreApp::setup()
     trayManager->hideCursor();
     addInputListener(trayManager);
     displayedHealth = ufoController->getHealth();
+    displayedCows = ufoController->getCowsAbducted();
+    displayedTimerSeconds = static_cast<int>(
+        std::ceil(ufoController->getGameTimer())
+    );
     healthLabel = trayManager->createLabel(
         OgreBites::TL_TOPLEFT, "HealthLabel",
         "UFO HEALTH: " + std::to_string(displayedHealth), 220);
+    cowsLabel = trayManager->createLabel(
+        OgreBites::TL_TOPLEFT, "CowsLabel",
+        "COWS ABDUCTED: " + std::to_string(displayedCows), 220);
+    timerLabel = trayManager->createLabel(
+        OgreBites::TL_TOPLEFT, "TimerLabel",
+        "TIME LEFT: " + formatTimer(displayedTimerSeconds), 220);
     trayManager->showTrays();
 }
 
@@ -249,6 +316,26 @@ void CoreApp::frameRendered(const Ogre::FrameEvent& evt)
             healthLabel->setCaption(
                 "UFO HEALTH: " +
                 std::to_string(displayedHealth)
+            );
+        }
+
+        int currentCows = ufoController->getCowsAbducted();
+        if (cowsLabel && currentCows != displayedCows)
+        {
+            displayedCows = currentCows;
+            cowsLabel->setCaption(
+                "COWS ABDUCTED: " + std::to_string(displayedCows)
+            );
+        }
+
+        int currentTimerSeconds = static_cast<int>(
+            std::ceil(ufoController->getGameTimer())
+        );
+        if (timerLabel && currentTimerSeconds != displayedTimerSeconds)
+        {
+            displayedTimerSeconds = currentTimerSeconds;
+            timerLabel->setCaption(
+                "TIME LEFT: " + formatTimer(displayedTimerSeconds)
             );
         }
     }
