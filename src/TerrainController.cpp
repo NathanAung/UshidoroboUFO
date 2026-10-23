@@ -264,7 +264,7 @@ float TerrainController::getHeightAt(float x, float z)
     );
 
     if (hit1.first)
-        return ray.getPoint(hit1.second).y - 40.0f;
+        return ray.getPoint(hit1.second).y - 50.0f;
 
     auto hit2 = Ogre::Math::intersects(
         ray, topRight, bottomLeft, bottomRight,
@@ -272,7 +272,7 @@ float TerrainController::getHeightAt(float x, float z)
     );
 
     if (hit2.first)
-        return ray.getPoint(hit2.second).y - 40.0f;
+        return ray.getPoint(hit2.second).y - 50.0f;
 
     return 0.0f;
 }

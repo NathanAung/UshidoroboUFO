@@ -1,57 +1,110 @@
-#include "UFOController.h"
 
-UFOController::UFOController(Ogre::SceneManager *scnMgr, Ogre::SceneNode *playerRoot, Ogre::SceneNode *visualNode, Ogre::Camera *camera, ParticleManager *particleMgr)
-    : mScnMgr(scnMgr), mPlayerRoot(playerRoot), mVisualNode(visualNode), mParticleManager(particleMgr),
-      mCowsAbducted(0), mHealth(5), mIsDead(false), mInvulnerabilityTimer(0.0f), mHoverAltitude(30.0f),
-      mGoingForward(false), mGoingBack(false), mGoingLeft(false), mGoingRight(false),
-      mBaseSpeed(100.0f), mCurrentSpeed(100.0f) // Adjust this value to match the game's scale
+#include "UFOController.h"
+#include "SpawnManager.h"
+
+
+UFOController::UFOController(
+    Ogre::SceneManager* scnMgr,
+    Ogre::SceneNode* playerRoot,
+    Ogre::SceneNode* visualNode,
+    Ogre::Camera* camera,
+    ParticleManager* particleMgr
+)
+    : mScnMgr(scnMgr),
+      mPlayerRoot(playerRoot),
+      mVisualNode(visualNode),
+      mParticleManager(particleMgr),
+      mSpawnManager(nullptr),
+      mCowsAbducted(0),
+      mHealth(5),
+      mIsDead(false),
+      mInvulnerabilityTimer(0.0f),
+      mHoverAltitude(30.0f),
+      mGoingForward(false),
+      mGoingBack(false),
+      mGoingLeft(false),
+      mGoingRight(false),
+      mBaseSpeed(100.0f),
+      mCurrentSpeed(100.0f),
+      mGameTimer(60.0f),
+      mTimeIsUp(false),
+      mPrinted30Sec(false),
+      mPrinted10Sec(false)
+      // CHANGE mGameTimer to 180.0f LATER
 {
-    // Seed the random number generator
     std::random_device rd;
     mRng = std::mt19937(rd());
 
-    // Define the hyperspeed range.
-    // The design specifies it can be both fast and slow, so the range spans below and above base speed.
-    mSpeedDistribution = std::uniform_real_distribution<float>(20.0f, 350.0f);
+    mSpeedDistribution =
+        std::uniform_real_distribution<float>(
+            20.0f, 350.0f
+        );
 
-    // Create the camera boom attached to the NON-spinning player root
-    mCameraBoom = mPlayerRoot->createChildSceneNode("CameraBoom");
+    // Camera boom
+    mCameraBoom =
+        mPlayerRoot->createChildSceneNode("CameraBoom");
 
-    // Position the camera offset: 80 units up (Y), 100 units behind (Z)
     mCameraBoom->setPosition(0, 80, 100);
-
-    // Attach the camera to this boom
     mCameraBoom->attachObject(camera);
 
-    // Point the camera to look slightly downward at the UFO's local origin
-    mCameraBoom->lookAt(Ogre::Vector3(0, 0, 0), Ogre::Node::TS_PARENT);
+    mCameraBoom->lookAt(
+        Ogre::Vector3(0, 0, 0),
+        Ogre::Node::TS_PARENT
+    );
 
-    // Initialize the RaySceneQuery
-    mRaySceneQuery = mScnMgr->createRayQuery(Ogre::Ray());
+    // Capture raycast
+    mRaySceneQuery =
+        mScnMgr->createRayQuery(Ogre::Ray());
+
+    // Create the light object
+    mSpotlight = mScnMgr->createLight("UFOSpotlight");
+    mSpotlight->setType(Ogre::Light::LT_SPOTLIGHT);
+    
+    // Set the color (e.g., a slightly eerie alien green/cyan). 
+    // Format is (Red, Green, Blue) from 0.0 to 1.0.
+    mSpotlight->setDiffuseColour(0.4f, 1.0f, 0.8f); 
+    mSpotlight->setSpecularColour(1.0f, 1.0f, 1.0f);
+    
+    // Define the cone of the spotlight
+    // Inner angle (fully bright) and Outer angle (fades to black)
+    mSpotlight->setSpotlightRange(Ogre::Degree(15.0f), Ogre::Degree(35.0f));
+    
+    // Set the attenuation (range and falloff)
+    // Range: 500 units, Constant: 1.0, Linear: 0.005, Quadratic: 0.0
+    mSpotlight->setAttenuation(500.0f, 1.0f, 0.005f, 0.0f);
+
+    // Attach it to a new node on the Player Root
+    mSpotlightNode = mPlayerRoot->createChildSceneNode("UFOSpotlightNode");
+    mSpotlightNode->attachObject(mSpotlight);
+    
+    // Point the node directly downwards
+    mSpotlightNode->setDirection(Ogre::Vector3(0, -1, 0), Ogre::Node::TS_PARENT);
 }
 
 UFOController::~UFOController()
 {
-    // Clean up the query memory
     if (mRaySceneQuery)
     {
         mScnMgr->destroyQuery(mRaySceneQuery);
+        mRaySceneQuery = nullptr;
     }
 }
 
-// Mock terrain implementation
+void UFOController::setSpawnManager(SpawnManager* manager)
+{
+    mSpawnManager = manager;
+}
+
 float UFOController::getTerrainHeight(float x, float z) const
 {
-    // Return 0 for now. Once the procedural map is finished,
-    // call terrain manager API here (e.g., return TerrainManager::getHeight(x, z);)
+    // Preserving existing hover behavior for now
     return 0.0f;
 }
 
 void UFOController::takeDamage(int amount)
 {
-    // Ignore damage if already dead or invulnerable
-    if (mIsDead || mInvulnerabilityTimer > 0.0f)
-        return;
+    // Ignore damage if dead, invulnerable, or if the game timer has ended
+    if (mIsDead || mTimeIsUp || mInvulnerabilityTimer > 0.0f) return;
 
     mHealth -= amount;
     mInvulnerabilityTimer = 1.5f;
@@ -59,47 +112,110 @@ void UFOController::takeDamage(int amount)
     if (mHealth <= 0)
     {
         mIsDead = true;
-
-        // Hide the UFO 3D model
         mVisualNode->setVisible(false);
 
-        // Trigger the large death explosion (lasts 1.5 seconds)
+        // Turn off the spotlight
+        mSpotlight->setVisible(false); 
+
         if (mParticleManager)
         {
-            mParticleManager->spawnExplosion(mPlayerRoot->getPosition(), "UFO/Explosion", 1.5f);
+            mParticleManager->spawnExplosion(
+                mPlayerRoot->getPosition(),
+                "UFO/Explosion",
+                1.5f
+            );
         }
 
-        Ogre::LogManager::getSingleton().logMessage("GAME OVER: UFO Destroyed!");
+        Ogre::LogManager::getSingleton().logMessage(
+            "GAME OVER: UFO Destroyed!"
+        );
     }
     else
     {
-        // Trigger the small damage explosion (lasts 0.5 seconds)
         if (mParticleManager)
         {
-            mParticleManager->spawnExplosion(mPlayerRoot->getPosition(), "UFO/SmallExplosion", 0.5f);
+            mParticleManager->spawnExplosion(
+                mPlayerRoot->getPosition(),
+                "UFO/SmallExplosion",
+                0.5f
+            );
         }
 
-        Ogre::LogManager::getSingleton().logMessage("UFO Hit! HP remaining: " + std::to_string(mHealth));
+        Ogre::LogManager::getSingleton().logMessage(
+            "UFO Hit! HP remaining: " +
+            std::to_string(mHealth)
+        );
     }
 }
 
-void UFOController::update(const Ogre::FrameEvent &evt)
+void UFOController::update(const Ogre::FrameEvent& evt)
 {
     if (!mPlayerRoot || !mVisualNode)
         return;
+
+    // --- Timer Logic ---
+    if (!mTimeIsUp && !mIsDead) 
+    {
+        mGameTimer -= evt.timeSinceLastFrame;
+
+        // Print debug messages at specific thresholds
+        if (mGameTimer <= 30.0f && !mPrinted30Sec) {
+            Ogre::LogManager::getSingleton().logMessage("DEBUG: 30 seconds left!");
+            mPrinted30Sec = true;
+        }
+        if (mGameTimer <= 10.0f && !mPrinted10Sec) {
+            Ogre::LogManager::getSingleton().logMessage("DEBUG: 10 seconds left!");
+            mPrinted10Sec = true;
+        }
+
+        // Handle Time Over state
+        if (mGameTimer <= 0.0f) {
+            mGameTimer = 0.0f;
+            mTimeIsUp = true;
+            
+            // Halt any current directional movement
+            mGoingForward = mGoingBack = mGoingLeft = mGoingRight = false;
+            
+            Ogre::LogManager::getSingleton().logMessage("TIME IS UP!");
+            Ogre::LogManager::getSingleton().logMessage("Final Score: Cows Abducted = " + std::to_string(mCowsAbducted));
+        }
+    }
 
     // If dead, bypass all movement, terrain following, and spinning logic
     if (mIsDead)
         return;
 
-    // Decrease the invulnerability timer
+    float dt = evt.timeSinceLastFrame;
+
     if (mInvulnerabilityTimer > 0.0f)
+        mInvulnerabilityTimer -= dt;
+
+
+    // UFO visual rotation
+    mVisualNode->yaw(Ogre::Degree(10.0f * dt));
+
+    // Only allow movement while time remains
+    if (!mTimeIsUp)
     {
-        mInvulnerabilityTimer -= evt.timeSinceLastFrame;
+        Ogre::Vector3 moveDir = Ogre::Vector3::ZERO;
+
+        if (mGoingForward) moveDir.z -= 1.0f;
+        if (mGoingBack)    moveDir.z += 1.0f;
+        if (mGoingLeft)    moveDir.x -= 1.0f;
+        if (mGoingRight)   moveDir.x += 1.0f;
+
+        if (moveDir != Ogre::Vector3::ZERO)
+        {
+            moveDir.normalise();
+
+            mPlayerRoot->translate(
+                moveDir * mCurrentSpeed * dt,
+                Ogre::Node::TS_WORLD
+            );
+        }
     }
 
-    // Spin the visual mesh independently
-    mVisualNode->yaw(Ogre::Degree(10.0f * evt.timeSinceLastFrame));
+    
 
     // Calculate movement direction
     Ogre::Vector3 moveDir(Ogre::Vector3::ZERO);
@@ -158,96 +274,116 @@ void UFOController::update(const Ogre::FrameEvent &evt)
 
     // Clamp the UFO's Y position to the terrain surface plus the hover altitude
     currentPos.y = surfaceY + mHoverAltitude;
+
     mPlayerRoot->setPosition(currentPos);
 }
 
-void UFOController::injectKeyDown(const OgreBites::KeyboardEvent &evt)
+void UFOController::injectKeyDown(
+    const OgreBites::KeyboardEvent& evt
+)
 {
-    if (mIsDead)
-        return;
+    // Ignore all input (Movement, Hyperspeed, Abduction) if dead or time is up
+    if (mIsDead || mTimeIsUp) return;
 
     OgreBites::Keycode key = evt.keysym.sym;
 
     if (key == 'w')
         mGoingForward = true;
+
     else if (key == 's')
         mGoingBack = true;
+
     else if (key == 'a')
         mGoingLeft = true;
+
     else if (key == 'd')
         mGoingRight = true;
-    // Trigger Hyperspeed
+
     else if (key == OgreBites::SDLK_LSHIFT)
     {
-        // Sample a new random speed from our distribution
         mCurrentSpeed = mSpeedDistribution(mRng);
     }
+
     else if (key == OgreBites::SDLK_SPACE)
     {
-        // Get current position and cast a ray directly downwards
-        Ogre::Vector3 ufoPos = mPlayerRoot->getPosition();
-        Ogre::Ray downwardRay(ufoPos, Ogre::Vector3::NEGATIVE_UNIT_Y);
+        if (!mSpawnManager)
+            return;
+
+        Ogre::Vector3 ufoPos =
+            mPlayerRoot->getPosition();
+
+        Ogre::Ray downwardRay(
+            ufoPos,
+            Ogre::Vector3::NEGATIVE_UNIT_Y
+        );
 
         mRaySceneQuery->setRay(downwardRay);
         mRaySceneQuery->setSortByDistance(true);
-
-        // Only check collisions against entities flagged as cows
         mRaySceneQuery->setQueryMask(COW_MASK);
 
-        // Execute the raycast
-        Ogre::RaySceneQueryResult &result = mRaySceneQuery->execute();
+        Ogre::RaySceneQueryResult& result =
+            mRaySceneQuery->execute();
 
-        for (auto itr = result.begin(); itr != result.end(); ++itr)
+        for (auto itr = result.begin();
+             itr != result.end(); ++itr)
         {
-            if (itr->movable)
-            {
-                // Ensure the cow is within a reasonable capture distance (e.g., 150 units below)
-                if (itr->distance < 150.0f)
-                {
-                    // Capture the cow
-                    Ogre::MovableObject *capturedCow = itr->movable;
-                    Ogre::SceneNode *cowNode = capturedCow->getParentSceneNode();
+            if (!itr->movable)
+                continue;
 
-                    // Detach and destroy to remove it from the game world
-                    cowNode->detachAllObjects();
-                    mScnMgr->destroyEntity(static_cast<Ogre::Entity *>(capturedCow));
-                    mScnMgr->destroySceneNode(cowNode);
+            if (itr->distance >= 150.0f)
+                continue;
 
-                    mCowsAbducted++;
-                    Ogre::LogManager::getSingleton().logMessage("Cow abducted! Total: " + std::to_string(mCowsAbducted));
+            // Extra cow flag verification
+            if ((itr->movable->getQueryFlags() & COW_MASK) == 0)
+                continue;
 
-                    // Break after capturing one cow so a single beam doesn't capture stacked cows simultaneously
-                    break;
-                }
-            }
+            Ogre::SceneNode* cowNode =
+                itr->movable->getParentSceneNode();
+
+            if (!cowNode)
+                continue;
+
+            // Begin capture animation
+            mSpawnManager->captureCow(cowNode);
+
+            mCowsAbducted++;
+
+            Ogre::LogManager::getSingleton().logMessage(
+                "Cow abducted! Total: " +
+                std::to_string(mCowsAbducted)
+            );
+
+            break;
         }
     }
-    // DAMAGE TEST
+
     else if (key == 'e')
     {
         takeDamage(1);
     }
 }
 
-void UFOController::injectKeyUp(const OgreBites::KeyboardEvent &evt)
+void UFOController::injectKeyUp(
+    const OgreBites::KeyboardEvent& evt
+)
 {
-    if (mIsDead)
-        return;
-
+    // Ignore key releases to prevent state bugs if time runs out while a key is held
+    if (mIsDead || mTimeIsUp) return;
+    
     OgreBites::Keycode key = evt.keysym.sym;
 
     if (key == 'w')
         mGoingForward = false;
+
     else if (key == 's')
         mGoingBack = false;
+
     else if (key == 'a')
         mGoingLeft = false;
+
     else if (key == 'd')
         mGoingRight = false;
-    // Revert Hyperspeed
+
     else if (key == OgreBites::SDLK_LSHIFT)
-    {
-        // Return to normal movement speed on key release
         mCurrentSpeed = mBaseSpeed;
-    }
 }

@@ -5,6 +5,7 @@
 #include <OgreInput.h>
 #include <random>
 #include "ParticleManager.h"
+#include "SpawnManager.h"
 
 // Define query masks to differentiate entities in the game world
 enum QueryFlags {
@@ -13,6 +14,8 @@ enum QueryFlags {
     ENVIRONMENT_MASK = 1 << 2,
     PLAYER_MASK = 1 << 3
 };
+
+class SpawnManager;
 
 class UFOController {
 public:
@@ -31,6 +34,8 @@ public:
 
     // Allows enemy AI to deal damage to the UFO
     void takeDamage(int amount);
+
+    void setSpawnManager(SpawnManager* manager);
 
 private:
     Ogre::SceneManager* mScnMgr;
@@ -61,12 +66,24 @@ private:
     float mBaseSpeed;
     float mCurrentSpeed; // Tracks the active speed multiplier
 
+    // spotlight
+    Ogre::Light* mSpotlight;
+    Ogre::SceneNode* mSpotlightNode;
+
     // C++11 Random Number Generation
     std::mt19937 mRng;
     std::uniform_real_distribution<float> mSpeedDistribution;
 
+    // timer
+    float mGameTimer;
+    bool mTimeIsUp;
+    bool mPrinted30Sec;
+    bool mPrinted10Sec;
+
     // Mock terrain function to be replaced by terrain generation
     float getTerrainHeight(float x, float z) const;
+
+    SpawnManager* mSpawnManager = nullptr;
 };
 
 #endif

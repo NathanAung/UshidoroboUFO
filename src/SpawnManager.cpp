@@ -1,12 +1,16 @@
+
 #include "SpawnManager.h"
-#include "UFOController.h" // For QueryFlags
-#include "TerrainController.h" // For getHeightAt
+#include "UFOController.h"
+#include "TerrainController.h"
+
 #include <string>
+#include <algorithm>
+#include <cmath>
 
 SpawnManager::SpawnManager(Ogre::SceneManager* scnMgr)
     : mScnMgr(scnMgr),
       mRng(std::random_device{}()),
-      mPositionDistribution(20.0f, 979.0f)
+      mPositionDistribution(-500.0f, 500.0f)
 {
 }
 
@@ -14,13 +18,17 @@ SpawnManager::~SpawnManager()
 {
     for (Ogre::SceneNode* node : mSpawnedNodes)
     {
-        node->detachAllObjects();
-        mScnMgr->destroySceneNode(node);
+        if (node)
+        {
+            node->detachAllObjects();
+            mScnMgr->destroySceneNode(node);
+        }
     }
 
     for (Ogre::Entity* entity : mSpawnedEntities)
     {
-        mScnMgr->destroyEntity(entity);
+        if (entity)
+            mScnMgr->destroyEntity(entity);
     }
 }
 
@@ -29,17 +37,56 @@ float SpawnManager::getTerrainHeight(float x, float z) const
     return TerrainController::getHeightAt(x, z);
 }
 
+SpawnManager::SpawnConfig SpawnManager::getSpawnConfig(
+    SpawnType type
+) const
+{
+    switch (type)
+    {
+    case SpawnType::Cow:
+        return {
+            "cow.mesh",
+            Ogre::Vector3(5.f, 5.f, 5.f)
+        };
+
+    case SpawnType::Tank:
+        return {
+            "cartoon_tank.mesh",
+            Ogre::Vector3(5.0f, 5.0f, 5.0f)
+        };
+
+    case SpawnType::Helicopter:
+        return {
+            "ogrehead.mesh",
+            Ogre::Vector3(2.0f, 2.0f, 2.0f)
+        };
+
+    case SpawnType::MilitaryBase:
+        return {
+            "ogrehead.mesh",
+            Ogre::Vector3(5.0f, 5.0f, 5.0f)
+        };
+
+    default:
+        return {
+            "ogrehead.mesh",
+            Ogre::Vector3::UNIT_SCALE
+        };
+    }
+}
+
 Ogre::SceneNode* SpawnManager::spawnObject(
     SpawnType type,
-    const Ogre::Vector3& position)
+    const Ogre::Vector3& position
+)
 {
-    std::string name = "Spawn_" + std::to_string(mSpawnCounter++);
+    std::string name =
+        "Spawn_" + std::to_string(mSpawnCounter++);
 
-    // Placeholder mesh for all objects
-    Ogre::Entity* entity = mScnMgr->createEntity(
-        name,
-        "ogrehead.mesh"
-    );
+    SpawnConfig config = getSpawnConfig(type);
+
+    Ogre::Entity* entity =
+        mScnMgr->createEntity(name, config.meshName);
 
     switch (type)
     {
@@ -62,31 +109,322 @@ Ogre::SceneNode* SpawnManager::spawnObject(
 
     node->attachObject(entity);
     node->setPosition(position);
+    node->setScale(config.scale);
 
-    // Temporary scale
-    node->setScale(0.5f, 0.5f, 0.5f);
-
+    
     mSpawnedNodes.push_back(node);
     mSpawnedEntities.push_back(entity);
 
+    // Register every spawned cow for automatic movement
+    if (type == SpawnType::Cow)
+    {
+        Cow cow;
+        cow.node = node;
+
+        std::uniform_real_distribution<float> angleDist(
+            0.0f, Ogre::Math::TWO_PI
+        );
+
+        std::uniform_real_distribution<float> speedDist(
+            3.0f, 7.0f
+        );
+
+        std::uniform_real_distribution<float> timeDist(
+            2.0f, 5.0f
+        );
+
+        float angle = angleDist(mRng);
+
+        cow.direction = Ogre::Vector3(
+            std::sin(angle),
+            0.0f,
+            std::cos(angle)
+        );
+
+        cow.moveSpeed = speedDist(mRng);
+        cow.stateTimer = timeDist(mRng);
+
+        mCows.push_back(cow);
+    }
+
     return node;
+
 }
 
 void SpawnManager::spawnRandom(SpawnType type, int count)
 {
-    for (int i = 0; i < count; i++)
+    for (int i = 0; i < count; ++i)
     {
         float x = mPositionDistribution(mRng);
         float z = mPositionDistribution(mRng);
 
         float y = getTerrainHeight(x, z);
 
-        // Helicopters fly above terrain
         if (type == SpawnType::Helicopter)
-        {
             y += 80.0f;
+
+        spawnObject(
+            type,
+            Ogre::Vector3(x, y, z)
+        );
+    }
+}
+
+void SpawnManager::captureCow(Ogre::SceneNode* cowNode)
+{
+    if (!cowNode)
+        return;
+
+    // Only accept nodes owned by SpawnManager
+    auto ownedNode = std::find(
+        mSpawnedNodes.begin(),
+        mSpawnedNodes.end(),
+        cowNode
+    );
+
+    if (ownedNode == mSpawnedNodes.end())
+        return;
+
+    // Prevent duplicate captures
+    for (const auto& cow : mCapturingCows)
+    {
+        if (cow.node == cowNode)
+            return;
+    }
+
+    // Ensure this node actually contains a cow
+    bool isCow = false;
+
+    for (unsigned int i = 0;
+         i < cowNode->numAttachedObjects(); ++i)
+    {
+        Ogre::MovableObject* object =
+            cowNode->getAttachedObject(i);
+
+        if ((object->getQueryFlags() & COW_MASK) != 0)
+            isCow = true;
+    }
+
+    if (!isCow)
+        return;
+
+    CapturedCow cow;
+    cow.node = cowNode;
+    cow.startScale = cowNode->getScale();
+    cow.startPosition = cowNode->getPosition();
+
+    mCapturingCows.push_back(cow);
+    
+    // Remove captured cow from normal movement
+    mCows.erase(
+        std::remove_if(
+            mCows.begin(),
+            mCows.end(),
+            [cowNode](const Cow& cow)
+            {
+                return cow.node == cowNode;
+            }
+        ),
+        mCows.end()
+    );
+
+
+    // Prevent additional raycast hits
+    for (unsigned int i = 0;
+         i < cowNode->numAttachedObjects(); ++i)
+    {
+        cowNode->getAttachedObject(i)->setQueryFlags(0);
+    }
+}
+
+void SpawnManager::update(float deltaTime)
+{
+    // Update all cows before processing capture animations
+    updateCows(deltaTime);
+
+    for (auto it = mCapturingCows.begin();
+         it != mCapturingCows.end();)
+    {
+        CapturedCow& cow = *it;
+
+        cow.elapsed += deltaTime;
+
+        float t = std::min(
+            cow.elapsed / mCaptureDuration,
+            1.0f
+        );
+
+        // Spin
+        cow.node->yaw(
+            Ogre::Degree(mCaptureSpinSpeed * deltaTime)
+        );
+
+        // Shrink
+        float shrink = 1.0f - t;
+        cow.node->setScale(cow.startScale * shrink);
+
+        // Move toward UFO
+        if (mUFONode)
+        {
+            Ogre::Vector3 targetPosition =
+                mUFONode->_getDerivedPosition();
+
+            // Move toward the UFO's underside
+            targetPosition.y -= 5.0f;
+
+            // Smoothly interpolate from cow to UFO
+            float smoothT = t * t * (3.0f - 2.0f * t);
+
+            Ogre::Vector3 newPosition =
+                cow.startPosition +
+                (targetPosition - cow.startPosition) * smoothT;
+
+            cow.node->setPosition(newPosition);
         }
 
-        spawnObject(type, Ogre::Vector3(x, y, z));
+        if (t >= 1.0f)
+        {
+            Ogre::SceneNode* node = cow.node;
+
+            // Detach and destroy entities
+            while (node->numAttachedObjects() > 0)
+            {
+                Ogre::MovableObject* object =
+                    node->getAttachedObject(0);
+
+                node->detachObject(object);
+
+                Ogre::Entity* entity =
+                    static_cast<Ogre::Entity*>(object);
+
+                auto entityIt = std::find(
+                    mSpawnedEntities.begin(),
+                    mSpawnedEntities.end(),
+                    entity
+                );
+
+                if (entityIt != mSpawnedEntities.end())
+                    mSpawnedEntities.erase(entityIt);
+
+                mScnMgr->destroyEntity(entity);
+            }
+
+            // Remove node from ownership tracking
+            auto nodeIt = std::find(
+                mSpawnedNodes.begin(),
+                mSpawnedNodes.end(),
+                node
+            );
+
+            if (nodeIt != mSpawnedNodes.end())
+                mSpawnedNodes.erase(nodeIt);
+
+            mScnMgr->destroySceneNode(node);
+
+            it = mCapturingCows.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
     }
+}
+
+
+void SpawnManager::updateCows(float deltaTime)
+{
+    std::uniform_real_distribution<float> walkTime(2.0f, 5.0f);
+    std::uniform_real_distribution<float> restTime(1.0f, 3.0f);
+    std::uniform_real_distribution<float> angleDist(
+        -Ogre::Math::PI,
+        Ogre::Math::PI
+    );
+
+    for (Cow& cow : mCows)
+    {
+        if (!cow.node)
+            continue;
+
+        cow.stateTimer -= deltaTime;
+
+        // Decide whether to walk or stop grazing
+        if (cow.stateTimer <= 0.0f)
+        {
+            cow.isMoving = !cow.isMoving;
+
+            if (cow.isMoving)
+            {
+                cow.stateTimer = walkTime(mRng);
+
+                float angle = angleDist(mRng);
+
+                cow.direction = Ogre::Vector3(
+                    std::sin(angle),
+                    0.0f,
+                    std::cos(angle)
+                );
+            }
+            else
+            {
+                cow.stateTimer = restTime(mRng);
+            }
+        }
+
+        if (!cow.isMoving)
+            continue;
+
+        // Move along the terrain
+        Ogre::Vector3 position = cow.node->getPosition();
+
+        position += cow.direction * cow.moveSpeed * deltaTime;
+
+        // Stay inside the generated map
+        position.x = Ogre::Math::Clamp(
+            position.x, 20.0f, 979.0f
+        );
+
+        position.z = Ogre::Math::Clamp(
+            position.z, 20.0f, 979.0f
+        );
+
+        // Match the terrain height
+        position.y = getTerrainHeight(position.x, position.z);
+
+        cow.node->setPosition(position);
+
+        // Gradually turn toward the walking direction
+        Ogre::Radian targetYaw = Ogre::Math::ATan2(
+            cow.direction.x,
+            cow.direction.z
+        );
+
+        Ogre::Quaternion targetOrientation(
+            targetYaw,
+            Ogre::Vector3::UNIT_Y
+        );
+
+        Ogre::Quaternion currentOrientation =
+            cow.node->getOrientation();
+
+        float rotationFactor = Ogre::Math::Clamp(
+            deltaTime * 3.0f,
+            0.0f,
+            1.0f
+        );
+
+        cow.node->setOrientation(
+            Ogre::Quaternion::Slerp(
+                rotationFactor,
+                currentOrientation,
+                targetOrientation,
+                true
+            )
+        );
+    }
+}
+
+
+void SpawnManager::setUFONode(Ogre::SceneNode* ufoNode)
+{
+    mUFONode = ufoNode;
 }

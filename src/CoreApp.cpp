@@ -1,21 +1,27 @@
+
 #include "CoreApp.h"
 
-CoreApp::CoreApp() : OgreBites::ApplicationContext("OgreTestApp"), ufoController(nullptr), trayManager(nullptr), mParticleManager(nullptr), healthLabel(nullptr), displayedHealth(-1)
+CoreApp::CoreApp()
+    : OgreBites::ApplicationContext("OgreTestApp"),
+      ufoController(nullptr),
+      spawnManager(nullptr),
+      trayManager(nullptr),
+      mParticleManager(nullptr),
+      healthLabel(nullptr),
+      displayedHealth(-1)
 {
 }
 
 CoreApp::~CoreApp()
 {
-    // Clean up the dynamically allocated controller
-    if (ufoController)
-    {
-        delete ufoController;
-        ufoController = nullptr;
-        spawnManager = nullptr;
-    }
+    delete ufoController;
+    ufoController = nullptr;
 
-    if (mParticleManager)
-        delete mParticleManager;
+    delete spawnManager;
+    spawnManager = nullptr;
+
+    delete mParticleManager;
+    mParticleManager = nullptr;
 }
 
 void CoreApp::setup()
@@ -23,47 +29,70 @@ void CoreApp::setup()
     OgreBites::ApplicationContext::setup();
     addInputListener(this);
 
-    if (trayManager)
-    {
+    Ogre::Root* root = getRoot();
+    Ogre::SceneManager* scnMgr = root->createSceneManager();
+    if (trayManager) {
         removeInputListener(trayManager);
         delete trayManager;
         trayManager = nullptr;
         healthLabel = nullptr;
     }
 
-    Ogre::Root *root = getRoot();
-    Ogre::SceneManager *scnMgr = root->createSceneManager();
+
     scnMgr->addRenderQueueListener(getOverlaySystem());
 
-    Ogre::RTShader::ShaderGenerator *shadergen = Ogre::RTShader::ShaderGenerator::getSingletonPtr();
+    Ogre::RTShader::ShaderGenerator* shadergen =
+        Ogre::RTShader::ShaderGenerator::getSingletonPtr();
     shadergen->addSceneManager(scnMgr);
 
-    // Create the camera, but not attached to the root scene node here
-    Ogre::Camera *cam = scnMgr->createCamera("MainCam");
+    // Camera
+    Ogre::Camera* cam = scnMgr->createCamera("MainCam");
     cam->setNearClipDistance(5);
     cam->setAutoAspectRatio(true);
 
-    Ogre::Viewport *viewport = getRenderWindow()->addViewport(cam);
-    viewport->setBackgroundColour(Ogre::ColourValue(0.08f, 0.15f, 0.26f));
+    Ogre::Viewport* viewport = getRenderWindow()->addViewport(cam);
+    viewport->setBackgroundColour(
+        Ogre::ColourValue(0.08f, 0.15f, 0.26f)
+    );
 
-    // Sunset directional light
-    Ogre::Light *light = scnMgr->createLight("MainLight");
+    // Lighting
+    Ogre::Light* light = scnMgr->createLight("MainLight");
     light->setType(Ogre::Light::LT_DIRECTIONAL);
-    Ogre::SceneNode *lightNode = scnMgr->getRootSceneNode()->createChildSceneNode();
-    lightNode->setDirection(Ogre::Vector3(-0.6f, -0.8f, 0.4f).normalisedCopy());
+
+    Ogre::SceneNode* lightNode =
+        scnMgr->getRootSceneNode()->createChildSceneNode();
+
+    lightNode->setDirection(
+        Ogre::Vector3(-0.6f, -0.8f, 0.4f).normalisedCopy()
+    );
     lightNode->attachObject(light);
+
     light->setDiffuseColour(1.15f, 0.75f, 0.52f);
     light->setSpecularColour(1.25f, 0.85f, 0.62f);
-    scnMgr->setAmbientLight(Ogre::ColourValue(0.22f, 0.18f, 0.26f));
 
+    scnMgr->setAmbientLight(
+        Ogre::ColourValue(0.22f, 0.18f, 0.26f)
+    );
+
+    // Resources and environment
     Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-        "../Media", "FileSystem", "General");
-    Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
-    scnMgr->setSkyDome(true, "Examples/CloudySky", 5, 8, 500, true);
-    scnMgr->setFog(Ogre::FOG_LINEAR, Ogre::ColourValue(0.08f, 0.15f, 0.26f), 0.0f, 220.0f, 620.0f);
+        "../Media", "FileSystem", "General"
+    );
 
-    // Entity creation
-    Ogre::Entity *ufoEntity = scnMgr->createEntity("UFO", "ufo.mesh");
+    Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+
+    scnMgr->setSkyDome(true, "Examples/CloudySky", 5, 8, 500, true);
+
+    scnMgr->setFog(
+        Ogre::FOG_LINEAR,
+        Ogre::ColourValue(0.08f, 0.15f, 0.26f),
+        0.0f, 220.0f, 620.0f
+    );
+
+    // UFO entity
+    Ogre::Entity* ufoEntity =
+        scnMgr->createEntity("UFO", "ufo.mesh");
+
     ufoEntity->setMaterialName("ufo.objMaterial.005");
 
     // Generate Terrain Mesh
@@ -141,14 +170,17 @@ void CoreApp::setup()
     // Initialize the Particle Manager first
     mParticleManager = new ParticleManager(scnMgr);
 
+    spawnManager->setUFONode(playerRoot);
+
     // Initialize the controller with the split nodes and the camera
     ufoController = new UFOController(scnMgr, playerRoot, visualNode, cam, mParticleManager);
 
     // Initialize the spawn manager
-    spawnManager = new SpawnManager(scnMgr);
+    spawnManager = new SpawnManager(spawnManager);
 
     // Spawn some test objects
     spawnManager->spawnRandom(SpawnType::Cow, 50);
+    spawnManager->spawnRandom(SpawnType::Tank, 50);
 
     trayManager = new OgreBites::TrayManager("GameUI", getRenderWindow(), this);
     trayManager->hideCursor();
@@ -160,38 +192,34 @@ void CoreApp::setup()
     trayManager->showTrays();
 }
 
-bool CoreApp::keyPressed(const OgreBites::KeyboardEvent &evt)
+bool CoreApp::keyPressed(const OgreBites::KeyboardEvent& evt)
 {
     OgreBites::Keycode key = evt.keysym.sym;
 
-    // Handle global application hotkeys first
     if (key == OgreBites::SDLK_ESCAPE)
     {
         getRoot()->queueEndRendering();
         return true;
     }
 
-    // Delegate player input to the controller
     if (ufoController)
-    {
         ufoController->injectKeyDown(evt);
-    }
 
     return true;
 }
 
-bool CoreApp::keyReleased(const OgreBites::KeyboardEvent &evt)
+bool CoreApp::keyReleased(const OgreBites::KeyboardEvent& evt)
 {
     if (ufoController)
-    {
         ufoController->injectKeyUp(evt);
-    }
+
     return true;
 }
 
-void CoreApp::frameRendered(const Ogre::FrameEvent &evt)
+
+
+void CoreApp::frameRendered(const Ogre::FrameEvent& evt)
 {
-    // Delegate frame updates to the controller
     if (ufoController)
     {
         ufoController->update(evt);
@@ -200,7 +228,11 @@ void CoreApp::frameRendered(const Ogre::FrameEvent &evt)
         if (healthLabel && currentHealth != displayedHealth)
         {
             displayedHealth = currentHealth;
-            healthLabel->setCaption("UFO HEALTH: " + std::to_string(displayedHealth));
+
+            healthLabel->setCaption(
+                "UFO HEALTH: " +
+                std::to_string(displayedHealth)
+            );
         }
     }
 
@@ -208,20 +240,28 @@ void CoreApp::frameRendered(const Ogre::FrameEvent &evt)
     {
         mParticleManager->update(evt.timeSinceLastFrame);
     }
+
+    if (spawnManager)
+    {
+        spawnManager->update(evt.timeSinceLastFrame);
+    }
 }
 
-bool CoreApp::mouseMoved(const OgreBites::MouseMotionEvent &evt)
+
+
+
+
+bool CoreApp::mouseMoved(const OgreBites::MouseMotionEvent& evt)
 {
     return true;
 }
 
-bool CoreApp::mouseWheelRolled(const OgreBites::MouseWheelEvent &evt)
+bool CoreApp::mouseWheelRolled(const OgreBites::MouseWheelEvent& evt)
 {
-    // Removed the headNode scaling here to fully decouple the player from CoreApp
     return true;
 }
 
-bool CoreApp::mousePressed(const OgreBites::MouseButtonEvent &evt)
+bool CoreApp::mousePressed(const OgreBites::MouseButtonEvent& evt)
 {
     return true;
 }
