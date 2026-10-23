@@ -13,6 +13,9 @@ enum class SpawnType
     Helicopter
 };
 
+class UFOController;
+class ParticleManager;
+
 class SpawnManager
 {
 public:
@@ -26,6 +29,10 @@ public:
     void update(float deltaTime);
 
     void setUFONode(Ogre::SceneNode* ufoNode);
+
+    void setUFOController(UFOController* controller);
+
+    void setParticleManager(ParticleManager* manager);
 
 private:
     Ogre::SceneManager* mScnMgr;
@@ -87,7 +94,23 @@ private:
 
     void updateCows(float deltaTime);
 
-    
+    struct Tank
+    {
+        Ogre::SceneNode* node = nullptr;
+
+        float detectionTimer = 0.0f;
+        float fireCooldown = 0.0f;
+    };
+
+    std::vector<Tank> mTanks;
+
+    UFOController* mUFOController = nullptr;
+
+    void updateTanks(float deltaTime);
+
+    void createTankMuzzleFlash(Ogre::SceneNode* tankNode);
+
+    ParticleManager* mParticleManager = nullptr;
 };
 
 #endif

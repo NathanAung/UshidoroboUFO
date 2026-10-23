@@ -173,6 +173,8 @@ void CoreApp::setup()
 
     // Initialize the spawn manager
     spawnManager = new SpawnManager(scnMgr);
+
+    spawnManager->setParticleManager(mParticleManager);
     
     spawnManager->setUFONode(playerRoot);
 
@@ -192,12 +194,13 @@ void CoreApp::setup()
         mAudioManager
     );
 
-    // Connect SpawnManager to UFOController
     ufoController->setSpawnManager(spawnManager);
+
+    spawnManager->setUFOController(ufoController);
 
     // Spawn some test objects
     spawnManager->spawnRandom(SpawnType::Cow, 50);
-    spawnManager->spawnRandom(SpawnType::Tank, 50);
+    spawnManager->spawnRandom(SpawnType::Tank, 30);
 
     trayManager = new OgreBites::TrayManager("GameUI", getRenderWindow(), this);
     trayManager->hideCursor();

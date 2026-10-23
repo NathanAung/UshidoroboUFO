@@ -226,8 +226,11 @@ std::array<int, 3> TerrainController::getTerrainColor(float noiseValue, const Te
 
 float TerrainController::getHeightAt(float x, float z)
 {
-    float gx = x / terrainScale;
-    float gz = z / terrainScale;
+    if (heightMap.empty() || heightMap[0].empty())
+        return -50.0f;
+
+    float gx = (x + 500.0f) / terrainScale;
+    float gz = (z + 500.0f) / terrainScale;
 
     int ix = static_cast<int>(std::floor(gx));
     int iz = static_cast<int>(std::floor(gz));
@@ -237,7 +240,7 @@ float TerrainController::getHeightAt(float x, float z)
 
     if (ix < 0 || iz < 0 ||
         ix >= width - 1 || iz >= depth - 1)
-        return 0.0f;
+        return -50.0f;
 
     auto vertex = [](int vx, int vz) -> Ogre::Vector3
     {
@@ -248,13 +251,15 @@ float TerrainController::getHeightAt(float x, float z)
         );
     };
 
-    Ogre::Vector3 topLeft     = vertex(ix, iz);
-    Ogre::Vector3 topRight    = vertex(ix + 1, iz);
-    Ogre::Vector3 bottomLeft  = vertex(ix, iz + 1);
+    Ogre::Vector3 topLeft = vertex(ix, iz);
+    Ogre::Vector3 topRight = vertex(ix + 1, iz);
+    Ogre::Vector3 bottomLeft = vertex(ix, iz + 1);
     Ogre::Vector3 bottomRight = vertex(ix + 1, iz + 1);
 
+    // Raycast using local mesh coordinates
     Ogre::Ray ray(
-        Ogre::Vector3(x, 1000.0f, z),
+        Ogre::Vector3(gx * terrainScale, 1000.0f,
+                      gz * terrainScale),
         Ogre::Vector3::NEGATIVE_UNIT_Y
     );
 
@@ -274,5 +279,5 @@ float TerrainController::getHeightAt(float x, float z)
     if (hit2.first)
         return ray.getPoint(hit2.second).y - 50.0f;
 
-    return 0.0f;
+    return -50.0f;
 }
