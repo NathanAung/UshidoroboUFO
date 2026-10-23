@@ -6,6 +6,7 @@
 #include <random>
 #include "ParticleManager.h"
 #include "SpawnManager.h"
+#include "AudioManager.h"
 
 // Define query masks to differentiate entities in the game world
 enum QueryFlags {
@@ -19,7 +20,7 @@ class SpawnManager;
 
 class UFOController {
 public:
-    UFOController(Ogre::SceneManager* scnMgr, Ogre::SceneNode* playerRoot, Ogre::SceneNode* visualNode, Ogre::Camera* camera, ParticleManager* particleMgr);
+    UFOController(Ogre::SceneManager* scnMgr, Ogre::SceneNode* playerRoot, Ogre::SceneNode* visualNode, Ogre::Camera* camera, ParticleManager* particleMgr, AudioManager* audioManager);
     ~UFOController();
 
     // Core update loop for continuous actions
@@ -40,6 +41,7 @@ public:
 private:
     Ogre::SceneManager* mScnMgr;
     ParticleManager* mParticleManager;
+    AudioManager* mAudioManager;
     
     // Split node architecture
     Ogre::SceneNode* mPlayerRoot; // Translates the player and camera
@@ -65,6 +67,7 @@ private:
     // Base movement speed (units per second)
     float mBaseSpeed;
     float mCurrentSpeed; // Tracks the active speed multiplier
+    bool isBoosting;
 
     // spotlight
     Ogre::Light* mSpotlight;

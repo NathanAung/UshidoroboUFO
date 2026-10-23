@@ -11,6 +11,7 @@
 #include "SpawnManager.h"
 #include "TerrainController.h"
 #include "ParticleManager.h"
+#include "AudioManager.h"
 
 class CoreApp 
     : public OgreBites::ApplicationContext
@@ -37,6 +38,7 @@ private:
     UFOController* ufoController;
     SpawnManager* spawnManager;
     ParticleManager* mParticleManager;
+    AudioManager* mAudioManager;
 
     OgreBites::TrayManager* trayManager;
     OgreBites::Label* healthLabel;

@@ -6,6 +6,7 @@ set modelsFolder="%~dp0..\Media\models"
 set materialFolder="%~dp0..\Media\materials\scripts"
 set textureFolder="%~dp0..\Media\materials\textures"
 set particleFolder="%~dp0..\Media\particle"
+set audioFolder="%~dp0..\Media\audio"
 
 echo Importing assets into OGRE media...
 
@@ -26,6 +27,18 @@ for %%f in (*) do (
     )
 	if /i "%%~xf"==".particle" (
         copy %%f %particleFolder%
+    )
+	if /i "%%~xf"==".mp3" (
+        copy %%f %audioFolder%
+    )
+	if /i "%%~xf"==".wav" (
+        copy %%f %audioFolder%
+    )
+	if /i "%%~xf"==".ogg" (
+        copy %%f %audioFolder%
+    )
+	if /i "%%~xf"==".flac" (
+        copy %%f %audioFolder%
     )
 )
 
