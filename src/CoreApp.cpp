@@ -171,9 +171,6 @@ void CoreApp::setup()
     // Initialize the Particle Manager first
     mParticleManager = new ParticleManager(scnMgr);
 
-    // Initialize the controller with the split nodes and the camera
-    ufoController = new UFOController(scnMgr, playerRoot, visualNode, cam, mParticleManager);
-
     // Initialize the spawn manager
     spawnManager = new SpawnManager(scnMgr);
     

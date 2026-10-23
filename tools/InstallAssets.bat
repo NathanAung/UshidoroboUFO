@@ -2,11 +2,15 @@
 
 cd /d "%~dp0..\assets"
 
-set modelsFolder="%~dp0..\Media\models"
-set materialFolder="%~dp0..\Media\materials\scripts"
-set textureFolder="%~dp0..\Media\materials\textures"
-set particleFolder="%~dp0..\Media\particle"
-set audioFolder="%~dp0..\Media\audio"
+set mediaPath="%~dp0..\Media"
+
+if not exist %mediaPath%\audio md %mediaPath%\audio
+
+set modelsFolder="%mediaPath%\models"
+set materialFolder="%mediaPath%\materials\scripts"
+set textureFolder="%mediaPath%\materials\textures"
+set particleFolder="%mediaPath%\particle"
+set audioFolder="%mediaPath%\audio"
 
 echo Importing assets into OGRE media...
 
