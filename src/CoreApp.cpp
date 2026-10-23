@@ -6,6 +6,7 @@ CoreApp::CoreApp()
       ufoController(nullptr),
       spawnManager(nullptr),
       trayManager(nullptr),
+      mAudioManager(nullptr),
       mParticleManager(nullptr),
       healthLabel(nullptr),
       displayedHealth(-1)
@@ -178,6 +179,23 @@ void CoreApp::setup()
     
     spawnManager->setUFONode(playerRoot);
 
+    // Include AudioManager.h and initialize it in setup()
+    mAudioManager = new AudioManager();
+
+    // Start your background track immediately
+    mAudioManager->playBGM("bgm.mp3");
+
+    // Create UFOController ONCE
+    ufoController = new UFOController(
+        scnMgr,
+        playerRoot,
+        visualNode,
+        cam,
+        mParticleManager, 
+        mAudioManager
+    );
+
+    // Connect SpawnManager to UFOController
     ufoController->setSpawnManager(spawnManager);
 
     // Spawn some test objects

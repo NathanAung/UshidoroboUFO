@@ -8,12 +8,14 @@ UFOController::UFOController(
     Ogre::SceneNode* playerRoot,
     Ogre::SceneNode* visualNode,
     Ogre::Camera* camera,
-    ParticleManager* particleMgr
+    ParticleManager* particleMgr,
+    AudioManager* audioManager
 )
     : mScnMgr(scnMgr),
       mPlayerRoot(playerRoot),
       mVisualNode(visualNode),
       mParticleManager(particleMgr),
+      mAudioManager(audioManager),
       mSpawnManager(nullptr),
       mCowsAbducted(0),
       mHealth(5),
@@ -26,6 +28,7 @@ UFOController::UFOController(
       mGoingRight(false),
       mBaseSpeed(100.0f),
       mCurrentSpeed(100.0f),
+      isBoosting(false),
       mGameTimer(60.0f),
       mTimeIsUp(false),
       mPrinted30Sec(false),
@@ -117,6 +120,8 @@ void UFOController::takeDamage(int amount)
         // Turn off the spotlight
         mSpotlight->setVisible(false); 
 
+        mAudioManager->playSFX("explode.wav");
+
         if (mParticleManager)
         {
             mParticleManager->spawnExplosion(
@@ -132,6 +137,8 @@ void UFOController::takeDamage(int amount)
     }
     else
     {
+        mAudioManager->playSFX("explodemini.wav");
+
         if (mParticleManager)
         {
             mParticleManager->spawnExplosion(
@@ -299,9 +306,11 @@ void UFOController::injectKeyDown(
     else if (key == 'd')
         mGoingRight = true;
 
-    else if (key == OgreBites::SDLK_LSHIFT)
+    else if (key == OgreBites::SDLK_LSHIFT && !isBoosting)
     {
         mCurrentSpeed = mSpeedDistribution(mRng);
+        mAudioManager->playSFX("ufo_boost.flac");
+        isBoosting = true;
     }
 
     else if (key == OgreBites::SDLK_SPACE)
@@ -353,6 +362,8 @@ void UFOController::injectKeyDown(
                 std::to_string(mCowsAbducted)
             );
 
+            mAudioManager->playSFX("ufo_abduct.flac");
+
             break;
         }
     }
@@ -384,6 +395,8 @@ void UFOController::injectKeyUp(
     else if (key == 'd')
         mGoingRight = false;
 
-    else if (key == OgreBites::SDLK_LSHIFT)
+    else if (key == OgreBites::SDLK_LSHIFT){
         mCurrentSpeed = mBaseSpeed;
+        isBoosting = false;
+    }
 }
