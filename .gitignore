@@ -55,10 +55,6 @@ Media/materials/*
 Media/materials/scripts/*
 !/Media/materials/scripts/UFOHorrorVignette.material
 !/Media/materials/scripts/UFOHorrorVignette.compositor
-!/Media/materials/scripts/UFOCloudHaze.material
-!/Media/materials/textures/
-Media/materials/textures/*
-!/Media/materials/textures/UFOCloudLayer.png
 !/Media/materials/programs/
 Media/materials/programs/*
 !/Media/materials/programs/GLSL/

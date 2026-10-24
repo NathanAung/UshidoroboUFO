@@ -7,13 +7,9 @@ void main()
     p.x *= 1.45;
 
     float vignette = smoothstep(0.34, 0.82, length(p));
-    float exposure = 1.0 - 0.68 * vignette;
+    float exposure = 1.0 - 0.82 * vignette;
     vec4 scene = texture2D(RT, oUv0);
-    vec3 coolShadow = vec3(0.008, 0.018, 0.085) * vignette;
-    vec3 nightGrade = scene.rgb * vec3(0.86, 0.93, 1.12);
-    vec3 blueAtmosphere = vec3(0.012, 0.02, 0.04);
+    vec3 coolShadow = vec3(0.008, 0.016, 0.04) * vignette;
 
-    gl_FragColor = vec4(
-        (nightGrade + blueAtmosphere) * exposure + coolShadow,
-        scene.a);
+    gl_FragColor = vec4(scene.rgb * exposure + coolShadow, scene.a);
 }

@@ -8,13 +8,9 @@ float4 HorrorVignette_ps(float4 pos : POSITION, float2 uv : TEXCOORD0) : COLOR
     float distanceFromCenter = length(p);
     float t = saturate((distanceFromCenter - 0.34) / (0.82 - 0.34));
     float vignette = t * t * (3.0 - 2.0 * t);
-    float exposure = 1.0 - 0.68 * vignette;
+    float exposure = 1.0 - 0.82 * vignette;
     float4 scene = tex2D(RT, uv);
-    float3 coolShadow = float3(0.008, 0.018, 0.085) * vignette;
-    float3 nightGrade = scene.rgb * float3(0.86, 0.93, 1.12);
-    float3 blueAtmosphere = float3(0.012, 0.02, 0.04);
+    float3 coolShadow = float3(0.008, 0.016, 0.04) * vignette;
 
-    return float4(
-        (nightGrade + blueAtmosphere) * exposure + coolShadow,
-        scene.a);
+    return float4(scene.rgb * exposure + coolShadow, scene.a);
 }
