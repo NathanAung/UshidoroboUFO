@@ -46,12 +46,12 @@ SpawnManager::SpawnConfig SpawnManager::getSpawnConfig(
     case SpawnType::Cow:
         return {
             "cow.mesh",
-            Ogre::Vector3(5.f, 5.f, 5.f)};
+            Ogre::Vector3(6.f, 6.f, 6.f)};
 
     case SpawnType::Tank:
         return {
             "cartoon_tank.mesh",
-            Ogre::Vector3(5.0f, 5.0f, 5.0f)};
+            Ogre::Vector3(6.0f, 6.0f, 6.0f)};
 
     case SpawnType::Helicopter:
         return {
