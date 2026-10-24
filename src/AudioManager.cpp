@@ -2,6 +2,8 @@
 #include <iostream>
 #include <filesystem>
 
+#define MEDIA(file) ("../../Media/" file)
+
 AudioManager::AudioManager() : mIsInitialized(false), mBgmLoaded(false)
 {
     if (ma_engine_init(NULL, &mEngine) == MA_SUCCESS) {
@@ -34,7 +36,7 @@ void AudioManager::playBGM(const std::string& filePath)
         mBgmLoaded = false;
     }
 
-    Ogre::String audioPath = "../../assets/" + filePath;
+    Ogre::String audioPath = MEDIA("audio/" + filePath);
     //Ogre::LogManager::getSingleton().logMessage(audioPath);
 
     // Initialize the sound. 
@@ -70,7 +72,7 @@ void AudioManager::playSFX(const std::string& filePath)
 {
     if (!mIsInitialized) return;
     
-    Ogre::String audioPath = "../../assets/" + filePath;
+    Ogre::String audioPath = MEDIA("audio/" + filePath);
 
     // Short sound effects (lasers, explosions) don't need streaming and can be fired immediately
     ma_engine_play_sound(&mEngine, audioPath.c_str(), NULL);
