@@ -52,6 +52,9 @@ private:
     int displayedTimerSeconds;
     bool gameEnded = false;
     bool restartRequested = false;
+
+    float postGameTimer = 0.0f;
+    float postGameRestartDelay = 3.0f; // 3 seconds before allowing restart
 };
 
 #endif

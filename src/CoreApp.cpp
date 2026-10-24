@@ -257,7 +257,7 @@ void CoreApp::setup()
 
 bool CoreApp::keyPressed(const OgreBites::KeyboardEvent &evt)
 {
-    if (gameEnded)
+    if (gameEnded && postGameTimer >= postGameRestartDelay)
     {
         restartRequested = true;
         getRoot()->queueEndRendering();
@@ -291,7 +291,14 @@ void CoreApp::frameRendered(const Ogre::FrameEvent &evt)
 {
 
     if (gameEnded)
+    {
+        if(postGameTimer < postGameRestartDelay)
+        {
+            postGameTimer += evt.timeSinceLastFrame;
+        }  
         return;
+    }
+
 
     if (ufoController &&
         (ufoController->getHealth() <= 0 ||
