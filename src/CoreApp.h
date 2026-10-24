@@ -50,6 +50,7 @@ private:
     int displayedHealth;
     int displayedCows;
     int displayedTimerSeconds;
+    bool gameEnded = false;
 };
 
 #endif

@@ -1,17 +1,16 @@
 
 #include "CoreApp.h"
-
 #include <cmath>
 
 namespace
 {
-std::string formatTimer(int totalSeconds)
-{
-    int minutes = totalSeconds / 60;
-    int seconds = totalSeconds % 60;
-    return (minutes < 10 ? "0" : "") + std::to_string(minutes) + ":" +
-        (seconds < 10 ? "0" : "") + std::to_string(seconds);
-}
+    std::string formatTimer(int totalSeconds)
+    {
+        int minutes = totalSeconds / 60;
+        int seconds = totalSeconds % 60;
+        return (minutes < 10 ? "0" : "") + std::to_string(minutes) + ":" +
+               (seconds < 10 ? "0" : "") + std::to_string(seconds);
+    }
 }
 
 CoreApp::CoreApp()
@@ -71,9 +70,10 @@ void CoreApp::setup()
     OgreBites::ApplicationContext::setup();
     addInputListener(this);
 
-    Ogre::Root* root = getRoot();
-    Ogre::SceneManager* scnMgr = root->createSceneManager();
-    if (trayManager) {
+    Ogre::Root *root = getRoot();
+    Ogre::SceneManager *scnMgr = root->createSceneManager();
+    if (trayManager)
+    {
         removeInputListener(trayManager);
         delete trayManager;
         trayManager = nullptr;
@@ -82,61 +82,51 @@ void CoreApp::setup()
         timerLabel = nullptr;
     }
 
-
     scnMgr->addRenderQueueListener(getOverlaySystem());
 
-    Ogre::RTShader::ShaderGenerator* shadergen =
+    Ogre::RTShader::ShaderGenerator *shadergen =
         Ogre::RTShader::ShaderGenerator::getSingletonPtr();
     shadergen->addSceneManager(scnMgr);
 
     // Camera
-    Ogre::Camera* cam = scnMgr->createCamera("MainCam");
+    Ogre::Camera *cam = scnMgr->createCamera("MainCam");
     cam->setNearClipDistance(5);
     cam->setAutoAspectRatio(true);
 
-    Ogre::Viewport* viewport = getRenderWindow()->addViewport(cam);
+    Ogre::Viewport *viewport = getRenderWindow()->addViewport(cam);
     viewport->setBackgroundColour(
-        Ogre::ColourValue(0.08f, 0.15f, 0.26f)
-    );
+        Ogre::ColourValue(0.08f, 0.15f, 0.26f));
 
     // Lighting
-    Ogre::Light* light = scnMgr->createLight("MainLight");
+    Ogre::Light *light = scnMgr->createLight("MainLight");
     light->setType(Ogre::Light::LT_DIRECTIONAL);
 
-    Ogre::SceneNode* lightNode =
+    Ogre::SceneNode *lightNode =
         scnMgr->getRootSceneNode()->createChildSceneNode();
 
     lightNode->setDirection(
-        Ogre::Vector3(-0.6f, -0.8f, 0.4f).normalisedCopy()
-    );
+        Ogre::Vector3(-0.6f, -0.8f, 0.4f).normalisedCopy());
     lightNode->attachObject(light);
 
     light->setDiffuseColour(1.15f, 0.75f, 0.52f);
     light->setSpecularColour(1.25f, 0.85f, 0.62f);
 
     scnMgr->setAmbientLight(
-        Ogre::ColourValue(0.22f, 0.18f, 0.26f)
-    );
+        Ogre::ColourValue(0.22f, 0.18f, 0.26f));
 
     // Resources and environment
-        // Resources and environment
-    Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-        "../Media", "FileSystem", "General"
-    );
 
     Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
-
 
     scnMgr->setSkyDome(true, "Examples/CloudySky", 5, 8, 500, true);
 
     scnMgr->setFog(
         Ogre::FOG_LINEAR,
         Ogre::ColourValue(0.08f, 0.15f, 0.26f),
-        0.0f, 220.0f, 620.0f
-    );
+        0.0f, 220.0f, 620.0f);
 
     // UFO entity
-    Ogre::Entity* ufoEntity =
+    Ogre::Entity *ufoEntity =
         scnMgr->createEntity("UFO", "ufo.mesh");
 
     ufoEntity->setMaterialName("ufo.objMaterial.005");
@@ -220,7 +210,7 @@ void CoreApp::setup()
     spawnManager = new SpawnManager(scnMgr);
 
     spawnManager->setParticleManager(mParticleManager);
-    
+
     spawnManager->setUFONode(playerRoot);
 
     // Include AudioManager.h and initialize it in setup()
@@ -235,9 +225,8 @@ void CoreApp::setup()
         playerRoot,
         visualNode,
         cam,
-        mParticleManager, 
-        mAudioManager
-    );
+        mParticleManager,
+        mAudioManager);
 
     ufoController->setSpawnManager(spawnManager);
 
@@ -253,8 +242,7 @@ void CoreApp::setup()
     displayedHealth = ufoController->getHealth();
     displayedCows = ufoController->getCowsAbducted();
     displayedTimerSeconds = static_cast<int>(
-        std::ceil(ufoController->getGameTimer())
-    );
+        std::ceil(ufoController->getGameTimer()));
     healthLabel = trayManager->createLabel(
         OgreBites::TL_TOPLEFT, "HealthLabel",
         "UFO HEALTH: " + std::to_string(displayedHealth), 220);
@@ -267,8 +255,10 @@ void CoreApp::setup()
     trayManager->showTrays();
 }
 
-bool CoreApp::keyPressed(const OgreBites::KeyboardEvent& evt)
+bool CoreApp::keyPressed(const OgreBites::KeyboardEvent &evt)
 {
+    if (gameEnded)
+        return true;
     OgreBites::Keycode key = evt.keysym.sym;
 
     if (key == OgreBites::SDLK_ESCAPE)
@@ -283,18 +273,41 @@ bool CoreApp::keyPressed(const OgreBites::KeyboardEvent& evt)
     return true;
 }
 
-bool CoreApp::keyReleased(const OgreBites::KeyboardEvent& evt)
+bool CoreApp::keyReleased(const OgreBites::KeyboardEvent &evt)
 {
+    if (gameEnded)
+        return true;
     if (ufoController)
         ufoController->injectKeyUp(evt);
 
     return true;
 }
 
-
-
-void CoreApp::frameRendered(const Ogre::FrameEvent& evt)
+void CoreApp::frameRendered(const Ogre::FrameEvent &evt)
 {
+
+    if (gameEnded)
+        return;
+
+    if (ufoController &&
+        (ufoController->getHealth() <= 0 ||
+         ufoController->getGameTimer() <= 0.0f))
+    {
+        trayManager->moveWidgetToTray(healthLabel, OgreBites::TL_CENTER);
+        trayManager->moveWidgetToTray(cowsLabel, OgreBites::TL_CENTER);
+        trayManager->moveWidgetToTray(timerLabel, OgreBites::TL_CENTER);
+
+        gameEnded = true;
+
+        healthLabel->setCaption("GAME OVER");
+        cowsLabel->setCaption(
+            "FINAL SCORE: " +
+            std::to_string(ufoController->getCowsAbducted()));
+        timerLabel->setCaption("Press ESC to quit");
+
+        return;
+    }
+
     if (ufoController)
     {
         ufoController->update(evt);
@@ -306,8 +319,7 @@ void CoreApp::frameRendered(const Ogre::FrameEvent& evt)
 
             healthLabel->setCaption(
                 "UFO HEALTH: " +
-                std::to_string(displayedHealth)
-            );
+                std::to_string(displayedHealth));
         }
 
         int currentCows = ufoController->getCowsAbducted();
@@ -315,19 +327,16 @@ void CoreApp::frameRendered(const Ogre::FrameEvent& evt)
         {
             displayedCows = currentCows;
             cowsLabel->setCaption(
-                "COWS ABDUCTED: " + std::to_string(displayedCows)
-            );
+                "COWS ABDUCTED: " + std::to_string(displayedCows));
         }
 
         int currentTimerSeconds = static_cast<int>(
-            std::ceil(ufoController->getGameTimer())
-        );
+            std::ceil(ufoController->getGameTimer()));
         if (timerLabel && currentTimerSeconds != displayedTimerSeconds)
         {
             displayedTimerSeconds = currentTimerSeconds;
             timerLabel->setCaption(
-                "TIME LEFT: " + formatTimer(displayedTimerSeconds)
-            );
+                "TIME LEFT: " + formatTimer(displayedTimerSeconds));
         }
     }
 
@@ -342,21 +351,17 @@ void CoreApp::frameRendered(const Ogre::FrameEvent& evt)
     }
 }
 
-
-
-
-
-bool CoreApp::mouseMoved(const OgreBites::MouseMotionEvent& evt)
+bool CoreApp::mouseMoved(const OgreBites::MouseMotionEvent &evt)
 {
     return true;
 }
 
-bool CoreApp::mouseWheelRolled(const OgreBites::MouseWheelEvent& evt)
+bool CoreApp::mouseWheelRolled(const OgreBites::MouseWheelEvent &evt)
 {
     return true;
 }
 
-bool CoreApp::mousePressed(const OgreBites::MouseButtonEvent& evt)
+bool CoreApp::mousePressed(const OgreBites::MouseButtonEvent &evt)
 {
     return true;
 }
