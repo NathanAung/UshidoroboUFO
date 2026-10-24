@@ -324,6 +324,10 @@ void UFOController::injectKeyDown(
 
     else if (key == OgreBites::SDLK_SPACE)
     {
+
+        mSpotlight->setDiffuseColour(0.3f, 0.9f, 3.0f);
+        mSpotlight->setSpecularColour(0.3f, 0.9f, 3.0f);
+
         if (!mSpawnManager)
             return;
 
@@ -377,10 +381,13 @@ void UFOController::injectKeyDown(
         }
     }
 
+
     else if (key == 'e')
     {
         takeDamage(1);
     }
+
+    
 }
 
 void UFOController::injectKeyUp(
@@ -407,5 +414,9 @@ void UFOController::injectKeyUp(
     else if (key == OgreBites::SDLK_LSHIFT){
         mCurrentSpeed = mBaseSpeed;
         isBoosting = false;
+    }
+    else if (key == OgreBites::SDLK_SPACE){
+        mSpotlight->setDiffuseColour(1.5f, 1.08f, 0.68f);
+        mSpotlight->setSpecularColour(1.5f, 1.18f, 0.82f);
     }
 }
