@@ -100,7 +100,7 @@ void CoreApp::setup()
         Ogre::ColourValue(0.018f, 0.032f, 0.075f));
 
     scnMgr->setAmbientLight(
-        Ogre::ColourValue(0.07f, 0.09f, 0.16f));
+        Ogre::ColourValue(0.14f, 0.2f, 0.32f));
     scnMgr->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_MODULATIVE);
     scnMgr->setShadowTextureSize(2048);
     scnMgr->setShadowColour(Ogre::ColourValue(0.04f, 0.05f, 0.09f));
