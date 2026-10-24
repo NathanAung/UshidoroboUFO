@@ -119,25 +119,13 @@ void CoreApp::setup()
     );
 
     // Resources and environment
+        // Resources and environment
     Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
         "../Media", "FileSystem", "General"
-    );
-    Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-        "../../assets", "FileSystem", "General"
     );
 
     Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 
-    Ogre::ResourceGroupManager& resourceGroups =
-        Ogre::ResourceGroupManager::getSingleton();
-    Ogre::MaterialManager& materialManager =
-        Ogre::MaterialManager::getSingleton();
-    Ogre::DataStreamPtr cowMaterials =
-        resourceGroups.openResource("cow.material", "General");
-    materialManager.parseScript(cowMaterials, "General");
-    Ogre::DataStreamPtr tankMaterials =
-        resourceGroups.openResource("cartoon_tank.material", "General");
-    materialManager.parseScript(tankMaterials, "General");
 
     scnMgr->setSkyDome(true, "Examples/CloudySky", 5, 8, 500, true);
 
