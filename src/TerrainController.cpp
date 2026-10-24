@@ -11,6 +11,9 @@ Ogre::Entity* TerrainController::GenerateTerrainMesh(Ogre::SceneManager *sceneMg
     int seed = std::rand();
     noise.seed(seed);
 
+    Noise regionNoise;
+    regionNoise.seed(seed);
+
     // Define terrain types
 // Dark Sand
 TerrainType darkSandTerrain(
