@@ -97,23 +97,23 @@ void CoreApp::setup()
 
     Ogre::Viewport *viewport = getRenderWindow()->addViewport(cam);
     viewport->setBackgroundColour(
-        Ogre::ColourValue(0.018f, 0.032f, 0.075f));
+        Ogre::ColourValue(0.04f, 0.065f, 0.13f));
 
     scnMgr->setAmbientLight(
         Ogre::ColourValue(0.14f, 0.2f, 0.32f));
     scnMgr->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_MODULATIVE);
     scnMgr->setShadowTextureSize(2048);
-    scnMgr->setShadowColour(Ogre::ColourValue(0.04f, 0.05f, 0.09f));
+    scnMgr->setShadowColour(Ogre::ColourValue(0.045f, 0.055f, 0.09f));
     scnMgr->setShadowFarDistance(700.0f);
 
     Ogre::Light *moonLight = scnMgr->createLight("MoonLight");
     moonLight->setType(Ogre::Light::LT_DIRECTIONAL);
-    moonLight->setDiffuseColour(0.10f, 0.14f, 0.25f);
-    moonLight->setSpecularColour(0.06f, 0.09f, 0.18f);
+    moonLight->setDiffuseColour(0.28f, 0.33f, 0.48f);
+    moonLight->setSpecularColour(0.12f, 0.15f, 0.24f);
     Ogre::SceneNode *moonLightNode =
         scnMgr->getRootSceneNode()->createChildSceneNode();
     moonLightNode->setDirection(
-        Ogre::Vector3(-0.45f, -1.0f, 0.35f).normalisedCopy());
+        Ogre::Vector3(-0.65f, -0.3f, 0.7f).normalisedCopy());
     moonLightNode->attachObject(moonLight);
 
     // Resources and environment
@@ -133,8 +133,8 @@ void CoreApp::setup()
 
     scnMgr->setFog(
         Ogre::FOG_LINEAR,
-        Ogre::ColourValue(0.018f, 0.032f, 0.075f),
-        0.0f, 1100.0f, 2600.0f);
+        Ogre::ColourValue(0.08f, 0.13f, 0.24f),
+        2600.0f, 9000.0f, 18000.0f);
 
     // UFO entity
     Ogre::Entity *ufoEntity =
@@ -148,7 +148,7 @@ void CoreApp::setup()
                                   ->getTechnique(0)
                                   ->getPass(0);
         ufoPass->setAmbient(0.025f, 0.04f, 0.08f);
-        ufoPass->setSelfIllumination(0.12f, 0.24f, 0.42f);
+        ufoPass->setSelfIllumination(0.3f, 0.16f, 0.06f);
     }
 
     // Generate Terrain Mesh
@@ -204,6 +204,31 @@ void CoreApp::setup()
     // 2. Create the visual node for the spinning animation (Child of Root)
     Ogre::SceneNode *visualNode = playerRoot->createChildSceneNode("UFOVisuals");
     visualNode->attachObject(ufoEntity);
+
+    Ogre::ManualObject *cloudLayer = scnMgr->createManualObject("UFOCloudLayer");
+    cloudLayer->setQueryFlags(0);
+    cloudLayer->begin("UFO/CloudHaze", Ogre::RenderOperation::OT_TRIANGLE_LIST);
+    auto addCloudVertex = [cloudLayer](float x, float z, float u, float v)
+    {
+        cloudLayer->position(x, 1.5f, z);
+        cloudLayer->textureCoord(u, v);
+        cloudLayer->normal(0.0f, 1.0f, 0.0f);
+    };
+    addCloudVertex(-1500.0f, -1500.0f, 0.0f, 0.0f);
+    addCloudVertex(-1500.0f, 1500.0f, 0.0f, 12.0f);
+    addCloudVertex(1500.0f, -1500.0f, 12.0f, 0.0f);
+    addCloudVertex(1500.0f, -1500.0f, 12.0f, 0.0f);
+    addCloudVertex(-1500.0f, 1500.0f, 0.0f, 12.0f);
+    addCloudVertex(1500.0f, 1500.0f, 12.0f, 12.0f);
+    cloudLayer->index(0);
+    cloudLayer->index(1);
+    cloudLayer->index(2);
+    cloudLayer->index(3);
+    cloudLayer->index(4);
+    cloudLayer->index(5);
+    cloudLayer->end();
+    scnMgr->getRootSceneNode()->createChildSceneNode("UFOCloudLayerNode")
+        ->attachObject(cloudLayer);
 
     // Apply scaling to the visual node
     visualNode->setScale(10.0f, 10.0f, 10.0f);

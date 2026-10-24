@@ -66,16 +66,17 @@ UFOController::UFOController(
     mSpotlight = mScnMgr->createLight("UFOSpotlight");
     mSpotlight->setType(Ogre::Light::LT_SPOTLIGHT);
     
-    mSpotlight->setDiffuseColour(1.15f, 0.95f, 0.72f);
-    mSpotlight->setSpecularColour(1.2f, 1.05f, 0.82f);
+    mSpotlight->setDiffuseColour(1.5f, 1.08f, 0.68f);
+    mSpotlight->setSpecularColour(1.5f, 1.18f, 0.82f);
     mSpotlight->setCastShadows(true);
     
     // Define the cone of the spotlight
     // Inner angle (fully bright) and Outer angle (fades to black)
-    mSpotlight->setSpotlightRange(Ogre::Degree(15.0f), Ogre::Degree(35.0f));
+    mSpotlight->setSpotlightRange(
+        Ogre::Degree(16.0f), Ogre::Degree(50.0f), 0.8f);
     
     // Set the attenuation (range and falloff)
-    mSpotlight->setAttenuation(500.0f, 1.0f, 0.005f, 0.0f);
+    mSpotlight->setAttenuation(600.0f, 1.0f, 0.0045f, 0.0f);
 
     // Attach it to a new node on the Player Root
     mSpotlightNode = mPlayerRoot->createChildSceneNode("UFOSpotlightNode");
@@ -83,9 +84,9 @@ UFOController::UFOController(
 
     mFillLight = mScnMgr->createLight("UFODesertFillLight");
     mFillLight->setType(Ogre::Light::LT_POINT);
-    mFillLight->setDiffuseColour(0.38f, 0.24f, 0.12f);
-    mFillLight->setSpecularColour(0.05f, 0.03f, 0.015f);
-    mFillLight->setAttenuation(340.0f, 1.0f, 0.0028f, 0.0f);
+    mFillLight->setDiffuseColour(0.5f, 0.28f, 0.12f);
+    mFillLight->setSpecularColour(0.08f, 0.04f, 0.015f);
+    mFillLight->setAttenuation(400.0f, 1.0f, 0.0025f, 0.0f);
     mSpotlightNode->attachObject(mFillLight);
     
     mSpotlightNode->setDirection(Ogre::Vector3(0, -1, 0), Ogre::Node::TS_PARENT);
