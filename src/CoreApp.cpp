@@ -258,7 +258,11 @@ void CoreApp::setup()
 bool CoreApp::keyPressed(const OgreBites::KeyboardEvent &evt)
 {
     if (gameEnded)
+    {
+        restartRequested = true;
+        getRoot()->queueEndRendering();
         return true;
+    }
     OgreBites::Keycode key = evt.keysym.sym;
 
     if (key == OgreBites::SDLK_ESCAPE)
@@ -303,7 +307,7 @@ void CoreApp::frameRendered(const Ogre::FrameEvent &evt)
         cowsLabel->setCaption(
             "FINAL SCORE: " +
             std::to_string(ufoController->getCowsAbducted()));
-        timerLabel->setCaption("Press ESC to quit");
+        timerLabel->setCaption("Press any key to restart");
 
         return;
     }

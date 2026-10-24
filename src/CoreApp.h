@@ -33,7 +33,7 @@ public:
     bool mouseMoved(const OgreBites::MouseMotionEvent& evt) override;
     bool mouseWheelRolled(const OgreBites::MouseWheelEvent& evt) override;
     bool mousePressed(const OgreBites::MouseButtonEvent& evt) override;
-
+    bool wantsRestart() const { return restartRequested; }
 
 private:
     void releaseOwnedObjects();
@@ -51,6 +51,7 @@ private:
     int displayedCows;
     int displayedTimerSeconds;
     bool gameEnded = false;
+    bool restartRequested = false;
 };
 
 #endif
