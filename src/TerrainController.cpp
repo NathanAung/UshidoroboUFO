@@ -11,7 +11,18 @@ Ogre::Entity* TerrainController::GenerateTerrainMesh(Ogre::SceneManager *sceneMg
     int seed = std::rand();
     noise.seed(seed);
 
-    TerrainType sandTerrain(0.0f, 1.0f, {176, 76, 30}, {255, 174, 68});
+    Noise regionNoise;
+    regionNoise.seed(seed / 2 + 7919);
+
+    TerrainType basinTerrain(0.2f, 0.4f, {151, 113, 72}, {174, 131, 82});
+    TerrainType sandTerrain(0.4f, 0.5f, {179, 127, 72}, {202, 149, 86}, 0.3f);
+    TerrainType grassTerrain(0.5f, 0.7f, {190, 146, 88}, {211, 169, 107});
+    TerrainType treesTerrain(0.7f, 0.75f, {170, 128, 77}, {190, 146, 89}, -0.5f);
+    TerrainType mesaTerrain(0.75f, 1.0f, {192, 125, 78}, {158, 94, 62}, 0.1f);
+
+    std::vector<TerrainType> terrainTypes = {
+        basinTerrain, sandTerrain, grassTerrain, treesTerrain, mesaTerrain
+    };
 
     // 2. Generate noise map matching the width and depth
     auto noiseMap = TerrainController::generateNoiseMap(width, depth, noise, 125.0f, 4, 0.5f, 2.0f, 0.0f, 0.0f);
@@ -32,6 +43,11 @@ Ogre::Entity* TerrainController::GenerateTerrainMesh(Ogre::SceneManager *sceneMg
 
     // Adjust this multiplier to make mountains taller or flatter
     float heightMultiplier = 50.0f; 
+    auto smoothstep = [](float edge0, float edge1, float value)
+    {
+        float t = Noise::clamp((value - edge0) / (edge1 - edge0), 0.0f, 1.0f);
+        return t * t * (3.0f - 2.0f * t);
+    };
 
     // 5. Generate vertices with heights and colors derived from noise
     for (int z = 0; z < depth; ++z)
@@ -43,7 +59,66 @@ Ogre::Entity* TerrainController::GenerateTerrainMesh(Ogre::SceneManager *sceneMg
             // Use noise value for vertex elevation (Y-axis)
             float vertexHeight = noiseValue * heightMultiplier;
 
-            std::array<int, 3> rgb = TerrainController::getTerrainColor(noiseValue, sandTerrain);
+            float region = Noise::clamp(
+                0.5f + regionNoise.perlin2(x / 190.0f, z / 190.0f),
+                0.0f, 1.0f);
+            float detail = Noise::clamp(
+                0.5f + regionNoise.perlin2(x / 48.0f + 37.0f, z / 48.0f - 19.0f),
+                0.0f, 1.0f);
+            float colorHeight = Noise::clamp(
+                noiseValue + (region - 0.5f) * 0.07f,
+                0.0f, 1.0f);
+
+            size_t terrainIndex = 0;
+            while (terrainIndex + 1 < terrainTypes.size() &&
+                   colorHeight >= terrainTypes[terrainIndex].maxHeight)
+            {
+                ++terrainIndex;
+            }
+            std::array<int, 3> rgb =
+                TerrainController::getTerrainColor(colorHeight, terrainTypes[terrainIndex]);
+
+            for (size_t i = 0; i + 1 < terrainTypes.size(); ++i)
+            {
+                float boundary = terrainTypes[i].maxHeight;
+                float previousBoundary =
+                    i == 0 ? terrainTypes[i].minHeight : terrainTypes[i - 1].maxHeight;
+                float nextBoundary = terrainTypes[i + 1].maxHeight;
+                float transitionWidth = std::min(
+                    0.045f,
+                    0.48f * std::min(
+                        boundary - previousBoundary,
+                        nextBoundary - boundary));
+                float transitionStart = boundary - transitionWidth;
+                float transitionEnd = boundary + transitionWidth;
+                if (colorHeight < transitionStart || colorHeight > transitionEnd)
+                    continue;
+
+                float t = smoothstep(
+                    transitionStart, transitionEnd, colorHeight);
+                auto currentColor =
+                    TerrainController::getTerrainColor(colorHeight, terrainTypes[i]);
+                auto nextColor =
+                    TerrainController::getTerrainColor(colorHeight, terrainTypes[i + 1]);
+                rgb = TerrainController::lerpColor(currentColor, nextColor, t);
+                break;
+            }
+
+            float scrubBand =
+                smoothstep(0.18f, 0.32f, colorHeight) *
+                (1.0f - smoothstep(0.58f, 0.72f, colorHeight));
+            float scrubPatches = smoothstep(0.48f, 0.76f, region) *
+                                 (0.82f + 0.18f * detail);
+            float scrubBlend = 0.35f * scrubBand * scrubPatches;
+            rgb = TerrainController::lerpColor(
+                rgb, {193, 151, 94}, scrubBlend);
+
+            float sandVariation = 0.94f + 0.12f * detail;
+            for (int channel = 0; channel < 3; ++channel)
+            {
+                rgb[channel] = static_cast<int>(Noise::clamp(
+                    rgb[channel] * sandVariation, 0.0f, 255.0f));
+            }
 
             // Set vertex position
             terrain->position(x * scale, vertexHeight, z * scale);
