@@ -72,6 +72,7 @@ private:
 
     // spotlight
     Ogre::Light* mSpotlight;
+    Ogre::Light* mFillLight;
     Ogre::SceneNode* mSpotlightNode;
 
     // C++11 Random Number Generation

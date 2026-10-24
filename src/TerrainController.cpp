@@ -11,16 +11,7 @@ Ogre::Entity* TerrainController::GenerateTerrainMesh(Ogre::SceneManager *sceneMg
     int seed = std::rand();
     noise.seed(seed);
 
-    // Define terrain types
-    TerrainType waterTerrain(0.2f, 0.4f, {30, 176, 251}, {40, 255, 255});
-    TerrainType sandTerrain(0.4f, 0.5f, {215, 192, 158}, {255, 246, 193}, 0.3f);
-    TerrainType grassTerrain(0.5f, 0.7f, {2, 166, 155}, {118, 239, 124});
-    TerrainType treesTerrain(0.7f, 0.75f, {22, 181, 141}, {10, 145, 113}, -0.5f);
-    TerrainType rockTerrain(0.75f, 1.0f, {205, 133, 63}, {120, 72, 36}, 0.1f);
-
-    std::vector<TerrainType> terrainTypes = {
-        waterTerrain, sandTerrain, grassTerrain, treesTerrain, rockTerrain
-    };
+    TerrainType sandTerrain(0.0f, 1.0f, {176, 76, 30}, {255, 174, 68});
 
     // 2. Generate noise map matching the width and depth
     auto noiseMap = TerrainController::generateNoiseMap(width, depth, noise, 125.0f, 4, 0.5f, 2.0f, 0.0f, 0.0f);
@@ -52,16 +43,7 @@ Ogre::Entity* TerrainController::GenerateTerrainMesh(Ogre::SceneManager *sceneMg
             // Use noise value for vertex elevation (Y-axis)
             float vertexHeight = noiseValue * heightMultiplier;
 
-            // Determine terrain color using your SFML terrain type logic
-            std::array<int, 3> rgb = {255, 255, 255};
-            for (const auto &terrainType : terrainTypes)
-            {
-                if (noiseValue < terrainType.maxHeight)
-                {
-                    rgb = TerrainController::getTerrainColor(noiseValue, terrainType);
-                    break;
-                }
-            }
+            std::array<int, 3> rgb = TerrainController::getTerrainColor(noiseValue, sandTerrain);
 
             // Set vertex position
             terrain->position(x * scale, vertexHeight, z * scale);

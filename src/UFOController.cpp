@@ -29,6 +29,9 @@ UFOController::UFOController(
       mBaseSpeed(100.0f),
       mCurrentSpeed(100.0f),
       isBoosting(false),
+      mSpotlight(nullptr),
+      mFillLight(nullptr),
+      mSpotlightNode(nullptr),
       mGameTimer(60.0f),
       mTimeIsUp(false),
       mPrinted30Sec(false),
@@ -63,24 +66,28 @@ UFOController::UFOController(
     mSpotlight = mScnMgr->createLight("UFOSpotlight");
     mSpotlight->setType(Ogre::Light::LT_SPOTLIGHT);
     
-    // Set the color (e.g., a slightly eerie alien green/cyan). 
-    // Format is (Red, Green, Blue) from 0.0 to 1.0.
-    mSpotlight->setDiffuseColour(0.4f, 1.0f, 0.8f); 
-    mSpotlight->setSpecularColour(1.0f, 1.0f, 1.0f);
+    mSpotlight->setDiffuseColour(1.15f, 0.95f, 0.72f);
+    mSpotlight->setSpecularColour(1.2f, 1.05f, 0.82f);
+    mSpotlight->setCastShadows(true);
     
     // Define the cone of the spotlight
     // Inner angle (fully bright) and Outer angle (fades to black)
     mSpotlight->setSpotlightRange(Ogre::Degree(15.0f), Ogre::Degree(35.0f));
     
     // Set the attenuation (range and falloff)
-    // Range: 500 units, Constant: 1.0, Linear: 0.005, Quadratic: 0.0
     mSpotlight->setAttenuation(500.0f, 1.0f, 0.005f, 0.0f);
 
     // Attach it to a new node on the Player Root
     mSpotlightNode = mPlayerRoot->createChildSceneNode("UFOSpotlightNode");
     mSpotlightNode->attachObject(mSpotlight);
+
+    mFillLight = mScnMgr->createLight("UFODesertFillLight");
+    mFillLight->setType(Ogre::Light::LT_POINT);
+    mFillLight->setDiffuseColour(0.38f, 0.24f, 0.12f);
+    mFillLight->setSpecularColour(0.05f, 0.03f, 0.015f);
+    mFillLight->setAttenuation(340.0f, 1.0f, 0.0028f, 0.0f);
+    mSpotlightNode->attachObject(mFillLight);
     
-    // Point the node directly downwards
     mSpotlightNode->setDirection(Ogre::Vector3(0, -1, 0), Ogre::Node::TS_PARENT);
 }
 
@@ -118,7 +125,8 @@ void UFOController::takeDamage(int amount)
         mVisualNode->setVisible(false);
 
         // Turn off the spotlight
-        mSpotlight->setVisible(false); 
+        mSpotlight->setVisible(false);
+        mFillLight->setVisible(false);
 
         mAudioManager->playSFX("explode.wav");
 
