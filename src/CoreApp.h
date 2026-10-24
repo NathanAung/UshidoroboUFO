@@ -24,6 +24,7 @@ public:
 
     // Setup
     void setup() override;
+    void shutdown() override;
 
     // Events
     bool keyPressed(const OgreBites::KeyboardEvent& evt) override;
@@ -35,6 +36,8 @@ public:
 
 
 private:
+    void releaseOwnedObjects();
+
     UFOController* ufoController;
     SpawnManager* spawnManager;
     ParticleManager* mParticleManager;
@@ -42,7 +45,11 @@ private:
 
     OgreBites::TrayManager* trayManager;
     OgreBites::Label* healthLabel;
+    OgreBites::Label* cowsLabel;
+    OgreBites::Label* timerLabel;
     int displayedHealth;
+    int displayedCows;
+    int displayedTimerSeconds;
 };
 
 #endif
