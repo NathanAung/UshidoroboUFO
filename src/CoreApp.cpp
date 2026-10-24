@@ -1,6 +1,8 @@
 
 #include "CoreApp.h"
 #include <cmath>
+#include <OgreCompositorInstance.h>
+#include <OgreCompositorManager.h>
 
 namespace
 {
@@ -95,41 +97,59 @@ void CoreApp::setup()
 
     Ogre::Viewport *viewport = getRenderWindow()->addViewport(cam);
     viewport->setBackgroundColour(
-        Ogre::ColourValue(0.08f, 0.15f, 0.26f));
-
-    // Lighting
-    Ogre::Light *light = scnMgr->createLight("MainLight");
-    light->setType(Ogre::Light::LT_DIRECTIONAL);
-
-    Ogre::SceneNode *lightNode =
-        scnMgr->getRootSceneNode()->createChildSceneNode();
-
-    lightNode->setDirection(
-        Ogre::Vector3(-0.6f, -0.8f, 0.4f).normalisedCopy());
-    lightNode->attachObject(light);
-
-    light->setDiffuseColour(1.15f, 0.75f, 0.52f);
-    light->setSpecularColour(1.25f, 0.85f, 0.62f);
+        Ogre::ColourValue(0.018f, 0.032f, 0.075f));
 
     scnMgr->setAmbientLight(
-        Ogre::ColourValue(0.22f, 0.18f, 0.26f));
+        Ogre::ColourValue(0.07f, 0.09f, 0.16f));
+    scnMgr->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_MODULATIVE);
+    scnMgr->setShadowTextureSize(2048);
+    scnMgr->setShadowColour(Ogre::ColourValue(0.04f, 0.05f, 0.09f));
+    scnMgr->setShadowFarDistance(700.0f);
+
+    Ogre::Light *moonLight = scnMgr->createLight("MoonLight");
+    moonLight->setType(Ogre::Light::LT_DIRECTIONAL);
+    moonLight->setDiffuseColour(0.10f, 0.14f, 0.25f);
+    moonLight->setSpecularColour(0.06f, 0.09f, 0.18f);
+    Ogre::SceneNode *moonLightNode =
+        scnMgr->getRootSceneNode()->createChildSceneNode();
+    moonLightNode->setDirection(
+        Ogre::Vector3(-0.45f, -1.0f, 0.35f).normalisedCopy());
+    moonLightNode->attachObject(moonLight);
 
     // Resources and environment
 
     Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
-
-    scnMgr->setSkyDome(true, "Examples/CloudySky", 5, 8, 500, true);
+    Ogre::CompositorInstance *vignette =
+        Ogre::CompositorManager::getSingleton().addCompositor(
+            viewport, "UFO/HorrorVignette");
+    if (!vignette)
+    {
+        OGRE_EXCEPT(
+            Ogre::Exception::ERR_ITEM_NOT_FOUND,
+            "Could not load the UFO horror vignette compositor.",
+            "CoreApp::setup");
+    }
+    vignette->setEnabled(true);
 
     scnMgr->setFog(
         Ogre::FOG_LINEAR,
-        Ogre::ColourValue(0.08f, 0.15f, 0.26f),
-        0.0f, 220.0f, 620.0f);
+        Ogre::ColourValue(0.018f, 0.032f, 0.075f),
+        0.0f, 1100.0f, 2600.0f);
 
     // UFO entity
     Ogre::Entity *ufoEntity =
         scnMgr->createEntity("UFO", "ufo.mesh");
 
     ufoEntity->setMaterialName("ufo.objMaterial.005");
+    for (unsigned short i = 0; i < ufoEntity->getNumSubEntities(); ++i)
+    {
+        Ogre::Pass *ufoPass = ufoEntity->getSubEntity(i)
+                                  ->getMaterial()
+                                  ->getTechnique(0)
+                                  ->getPass(0);
+        ufoPass->setAmbient(0.025f, 0.04f, 0.08f);
+        ufoPass->setSelfIllumination(0.12f, 0.24f, 0.42f);
+    }
 
     // Generate Terrain Mesh
     TerrainController terrainController;
@@ -187,20 +207,6 @@ void CoreApp::setup()
 
     // Apply scaling to the visual node
     visualNode->setScale(10.0f, 10.0f, 10.0f);
-
-    // --- TEMPORARY TEST COW ---
-    // Using the ogrehead as a placeholder for the cow
-    Ogre::Entity *testCow = scnMgr->createEntity("TestCow", "ogrehead.mesh");
-
-    // Apply the cow mask so the tractor beam raycast can detect it
-    testCow->setQueryFlags(COW_MASK);
-
-    Ogre::SceneNode *testCowNode = scnMgr->getRootSceneNode()->createChildSceneNode("TestCowNode");
-    testCowNode->attachObject(testCow);
-
-    // Position it slightly in front of and below the UFO starting position
-    testCowNode->setPosition(0, -50, -50);
-    testCowNode->setScale(0.5f, 0.5f, 0.5f);
     // --------------------------
 
     // Initialize the Particle Manager first

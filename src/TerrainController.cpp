@@ -12,14 +12,47 @@ Ogre::Entity* TerrainController::GenerateTerrainMesh(Ogre::SceneManager *sceneMg
     noise.seed(seed);
 
     // Define terrain types
-    TerrainType waterTerrain(0.2f, 0.4f, {30, 176, 251}, {40, 255, 255});
-    TerrainType sandTerrain(0.4f, 0.5f, {215, 192, 158}, {255, 246, 193}, 0.3f);
-    TerrainType grassTerrain(0.5f, 0.7f, {2, 166, 155}, {118, 239, 124});
-    TerrainType treesTerrain(0.7f, 0.75f, {22, 181, 141}, {10, 145, 113}, -0.5f);
-    TerrainType rockTerrain(0.75f, 1.0f, {205, 133, 63}, {120, 72, 36}, 0.1f);
+// Dark Sand
+TerrainType darkSandTerrain(
+    0.2f, 0.4f,
+    {145, 70, 43},
+    {190, 100, 57},
+    0.3f
+);
+
+// Sand
+TerrainType sandTerrain(
+    0.4f, 0.5f,
+    {215, 137, 75},
+    {245, 184, 105},
+    0.3f
+);
+
+// Dry Grass
+TerrainType dryGrassTerrain(
+    0.5f, 0.7f,
+    {183, 104, 53},
+    {220, 145, 72}
+);
+
+// Orange Rock
+TerrainType orangeRockTerrain(
+    0.7f, 0.75f,
+    {205, 105, 54},
+    {238, 151, 76},
+    -0.5f
+);
+
+// Dark Rock
+TerrainType darkRockTerrain(
+    0.75f, 1.0f,
+    {165, 83, 51},
+    {195, 112, 65},
+    0.1f
+);
 
     std::vector<TerrainType> terrainTypes = {
-        waterTerrain, sandTerrain, grassTerrain, treesTerrain, rockTerrain
+        darkSandTerrain, sandTerrain, dryGrassTerrain, orangeRockTerrain, darkRockTerrain
     };
 
     // 2. Generate noise map matching the width and depth

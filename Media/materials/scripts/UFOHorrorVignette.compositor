@@ -1,0 +1,23 @@
+compositor UFO/HorrorVignette
+{
+    technique
+    {
+        texture rt0 target_width target_height PF_BYTE_RGBA
+
+        target rt0
+        {
+            input previous
+        }
+
+        target_output
+        {
+            input none
+
+            pass render_quad
+            {
+                material UFO/HorrorVignette
+                input 0 rt0
+            }
+        }
+    }
+}
