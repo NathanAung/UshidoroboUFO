@@ -1,0 +1,4 @@
+
+# Third-party code
+/[Ss]rc/miniaudio_impl.cpp linguist-vendored
+/[Ss]rc/miniaudio.h linguist-vendored
